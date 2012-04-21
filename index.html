@@ -51,28 +51,34 @@ $(window).bind('space_geosocial_ready', function(){
     }
 
     function init() {
+    	window.space_geosocial.get_near_stars(function(stars_list){
+    		stars = stars_list;
+    		init2();
+    	}, screen_azimuth, screen_elevation);
+    	 // //KASHIWAI API
+        // var bsc = STARS_DATA;
+        // console.log("bsc");
+        // console.log(bsc[0]);
+        // var date = new Date();
+        // var time = new Orb.Time(date);
+        // for(var i = 0; i < STAR_NUM; i++){
+            // var target = {
+              // "ra": bsc[i].RAh,
+              // "dec": bsc[i].DEd
+            // };
+            // var observe = new Orb.Observation(observer,target);
+            // var look = observe.horizontal(time);
+            // result.push(look);
+        // }
+        // console.log("result");
+        // console.log(result[0]);
+    }
+    
+    function init2(){
         console.log("SCREEN_SIZE");
         console.log(SCREEN_WIDTH);
         console.log(SCREEN_HEIGHT);
-
-        //KASHIWAI API
-        var bsc = STARS_DATA;
-        console.log("bsc");
-        console.log(bsc[0]);
-        var date = new Date();
-        var time = new Orb.Time(date);
-        for(var i = 0; i < STAR_NUM; i++){
-            var target = {
-              "ra": bsc[i].RAh,
-              "dec": bsc[i].DEd
-            };
-            var observe = new Orb.Observation(observer,target);
-            var look = observe.horizontal(time);
-            result.push(look);
-        }
-        console.log("result");
-        console.log(result[0]);
-
+		
         // create a new stage and point it at our canvas:
         canvas = document.getElementById("testCanvas");
         canvas.width = SCREEN_WIDTH;
@@ -99,12 +105,12 @@ $(window).bind('space_geosocial_ready', function(){
         //stage.addChild(moon);
 
         // draw the moon in a separate shape, so it isn't part of the generative caching:
-        for(var i=0;i<STAR_NUM;i++){
+        for(var i=0;i<stars.length;i++){
             //Position
             var pos_x = Math.floor( Math.random() * SCREEN_WIDTH );
             var pos_y = Math.floor( Math.random() * SCREEN_HEIGHT );
             //var size = Math.floor( Math.random() * 4 ) + 1;
-            var size = (-bsc[i].Vmag + 5);
+            var size = (-stars[i].vmag + 5);
 
             //Shape
             stars[i] = new Shape();
@@ -114,7 +120,7 @@ $(window).bind('space_geosocial_ready', function(){
             stage.addChild(stars[i]);
 
             //star name
-            star_names[i] = new Text(bsc[i].Name, "18px Arial", "#AAA");
+            star_names[i] = new Text(stars[i].name, "18px Arial", "#AAA");
             star_names.textBaseline = "top";
            // star_names[i] = new Text("HW", "22px Arial", "#AAA");
             star_names[i].x = pos_x + 5;
