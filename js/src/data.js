@@ -381,7 +381,7 @@
             ra: star.RAh,
             dec: star.DEd
           };
-          observe = new Orb.Observation(observer, target);
+          observe = new Orb.Observation(looks.observer, target);
           look = observe.horizontal(time);
           hr = star.HR != null ? star.HR : '';
           bfID = star.bfID != null ? star.bfID : '';

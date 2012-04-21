@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <title>EaselJS Example: Using Stage.autoClear</title>
+    <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
     <script type="text/javascript" src="js/libs/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/libs/orb.js/core.js"></script>
     <script type="text/javascript" src="js/libs/html5sql/html5sql.min.js"></script>
     <script type="text/javascript" src="js/libs/stars_data.js"></script>
     <script type="text/javascript" src="js/src/data.js"></script>
-    <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
-<!--<script type="text/javascript" src="js/libs/orb.js/data/bsc_long.js"></script>-->
+    <script type="text/javascript" src="js/libs/orb.js/data/bsc_long.js"></script>
 <style type="text/css">
 * {
     margin: 0;
@@ -32,7 +32,6 @@ var STAR_NUM = 200;
 var canvas;
 var stage;
 var starfield;
-//var moon;
 var stars = new Array();
 var star_names = new Array();
 var star_azimuth = new Array();
@@ -44,35 +43,19 @@ var screen_elevation; //高角度
 
 $(window).bind('space_geosocial_ready', function(){
     function init() {
-    	window.space_geosocial.get_near_stars(function(stars_list){
-    		init2(stars_list);
-    	}, screen_azimuth, screen_elevation);
-    	 // //KASHIWAI API
-        // var bsc = STARS_DATA;
-        // console.log("bsc");
-        // console.log(bsc[0]);
-        // var date = new Date();
-        // var time = new Orb.Time(date);
-        // for(var i = 0; i < STAR_NUM; i++){
-            // var target = {
-              // "ra": bsc[i].RAh,
-              // "dec": bsc[i].DEd
-            // };
-            // var observe = new Orb.Observation(observer,target);
-            // var look = observe.horizontal(time);
-            // result.push(look);
-        // }
-        // console.log("result");
-        // console.log(result[0]);
+        window.space_geosocial.get_near_stars(function(stars_list){
+            console.log(stars_list);
+            init2(stars_list);
+        }, screen_azimuth, screen_elevation);
     }
-    
+
     function init2(stars_list){
         console.log("SCREEN_SIZE");
         console.log(SCREEN_WIDTH);
         console.log(SCREEN_HEIGHT);
-        
+
         STAR_NUM = stars_list.length;
-		
+
         // create a new stage and point it at our canvas:
         canvas = document.getElementById("testCanvas");
         canvas.width = SCREEN_WIDTH;
@@ -123,7 +106,7 @@ $(window).bind('space_geosocial_ready', function(){
             stage.addChild(star_names[i]);
 
         }
-		
+
         // start the tick and point it at the window so we can do some work before updating the stage:
         Ticker.addListener(window);
         Ticker.setFPS(60);
