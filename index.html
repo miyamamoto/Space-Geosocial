@@ -1,193 +1,24 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8" />
-<title>EaselJS Example: Using Stage.autoClear</title>
-    <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
-    <script type="text/javascript" src="js/libs/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="js/libs/orb.js/core.js"></script>
-    <script type="text/javascript" src="js/libs/html5sql/html5sql.min.js"></script>
-    <script type="text/javascript" src="js/libs/stars_data.js"></script>
-    <script type="text/javascript" src="js/src/data.js"></script>
-    <script type="text/javascript" src="js/libs/orb.js/data/bsc_long.js"></script>
-<style type="text/css">
-* {
-    margin: 0;
-    padding: 0;
-}
-canvas {
-    position: absolute;
-}
-</style>
-<script>
-var onready = false;
-$(function(){
-    onready = true;
-});
-
-var SCREEN_WIDTH    = innerWidth;
-var SCREEN_HEIGHT   = innerHeight;
-var STAR_NUM = 200;
-
-var canvas;
-var stage;
-var starfield;
-var stars = new Array();
-var star_names = new Array();
-var star_azimuth = new Array();
-var star_elevation = new Array();
-var sky;
-var result = [];
-var screen_azimuth; //方位
-var screen_elevation; //高角度
-
-$(window).bind('space_geosocial_ready', function(){
-    function init() {
-        window.space_geosocial.get_near_stars(function(stars_list){
-            console.log(stars_list);
-            init2(stars_list);
-        }, screen_azimuth, screen_elevation);
-    }
-
-    function init2(stars_list){
-        console.log("SCREEN_SIZE");
-        console.log(SCREEN_WIDTH);
-        console.log(SCREEN_HEIGHT);
-
-        STAR_NUM = stars_list.length;
-
-        // create a new stage and point it at our canvas:
-        canvas = document.getElementById("testCanvas");
-        canvas.width = SCREEN_WIDTH;
-        canvas.height= SCREEN_HEIGHT;
-        stage = new Stage(canvas);
-
-        // draw the sky:
-        sky = new Shape();console.log('hoge');
-        sky.graphics.beginLinearGradientFill(["#204","#003","#000"], [0,0.15,0.6], 0, canvas.height, 0, 0);
-        sky.graphics.drawRect(0, 0, canvas.width, canvas.height);
-        stage.addChild(sky);
-
-        // create a Shape instance to draw the vectors stars in, and add it to the stage:
-        starfield = new Shape();
-        stage.addChild(starfield);
-
-        // set up the cache for the star field shape, and make it the same size as the canvas:
-        starfield.cache(0,0,canvas.width,canvas.height);
-
-        // draw the moon in a separate shape, so it isn't part of the generative caching:
-        //moon = new Shape();
-        //moon.graphics.beginFill("#FFF").drawCircle(100,100,5);
-        //moon.rotation = -50;
-        //stage.addChild(moon);
-
-        // draw the moon in a separate shape, so it isn't part of the generative caching:
-
-        for(var i=0;i<STAR_NUM;i++){
-            //Position
-            var pos_x = Math.floor( Math.random() * SCREEN_WIDTH );
-            var pos_y = Math.floor( Math.random() * SCREEN_HEIGHT );
-            //var size = Math.floor( Math.random() * 4 ) + 1;
-            var size = (-stars_list[i].vmag + 5);
-
-            //Shape
-            stars[i] = new Shape();
-            stars[i].graphics.beginFill("#FFF").drawCircle(pos_x, pos_y, size);
-            //stars[i].graphics.beginFill(Graphics.getRGB(0xFFFFFF,Math.random())).drawPolyStar(Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*20+1, 5, 0.6, Math.random()*360);
-            //stars[i].rotation = Math.floor( Math.random() * 100 ) -50;
-            stage.addChild(stars[i]);
-
-            //star name
-            star_names[i] = new Text(stars_list[i].name, "18px Arial", "#AAA");
-            star_names.textBaseline = "top";
-           // star_names[i] = new Text("HW", "22px Arial", "#AAA");
-            star_names[i].x = pos_x + 5;
-            star_names[i].y = pos_y + 5;
-            stage.addChild(star_names[i]);
-
-        }
-
-        // start the tick and point it at the window so we can do some work before updating the stage:
-        Ticker.addListener(window);
-        Ticker.setFPS(60);
-    }
-
-    if(onready === true){
-        console.log("true");
-        init();
-    }else{
-        console.log("false");
-        $(function(){
-            init();
-        });
-    }
-});
-function stop() {
-    Ticker.removeListener(window);
-}
-
-function tick() {
-
-    // draw a vector star at a random location:
-    starfield.graphics.beginFill(Graphics.getRGB(0xFFFFFF,Math.random())).drawPolyStar(Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*4+1, 5, 0.93, Math.random()*360);
-
-    // draw the new vector onto the existing cache, compositing it with the "source-overlay" composite operation:
-    starfield.updateCache("source-overlay");
-
-    // if you omit the compositeOperation param in updateCache, it will clear the existing cache, and draw into it:
-    // in this demo, that has the effect of showing just the star that was drawn each tick.
-    //shape.updateCache();
-
-    // because the vector star has already been drawn to the cache, we can clear it right away:
-    starfield.graphics.clear();
-
-    // darken the sky:
-    sky.alpha -= 0.0005;
-
-    // move the moon across the sky:
-    //var w = canvas.width+200;
-    //moon.x = (moon.x+100+1+w)%w-100;
-    //moon.y = 250-Math.sin(moon.x/w*Math.PI)*150;
-
-    // move the moon across the sky:
-    var w = canvas.width+200;
-    for(var i=0;i<STAR_NUM;i++){
-        var azimuth = screen_azimuth;
-        var elevation = screen_elevation;
-        //stars[i].x = screen_azimuth;
-        //stars[i].y = screen_elevation;
-        //star_names[i].x = azimuth;
-        //star_names[i].y = elevation;
-
-        //stars[i].x = (stars[i].x+100+1+w)%w-100;
-        //stars[i].y = stars[i].y;
-        //star_names[i].x = (star_names[i].x+100+1+w)%w-100;
-        //star_names[i].y = star_names[i].y;
-        //stars[i].y = 250-Math.sin(stars[i].x/w*Math.PI)*150;
-    }
-    // draw the updates to stage:
-    stage.update();
-}
-
-function setValue(data) {
-    screen_azimuth = data.alpha;
-    screen_elevation = data.gamma;
-};
-
-window.ondeviceorientation = function(event) {
-    var data = {
-        alpha:(event.alpha < 180 ) ? event.alpha/10 : (event.alpha - 360)/10,
-        beta: event.beta/10 ,
-        gamma: (event.gamma + 90)/10
-    };
-    setValue(data);
-};
-</script>
-</head>
-
-<body>
-    <div class="canvasHolder">
-        <canvas id="testCanvas" width="300" height="416" style="background-color:#000"></canvas>
-    </div>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <!-- Mobile viewport optimization http://goo.gl/b9SaQ -->
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Space-Geosocial</title>
+        <script type="text/javascript" src="js/libs/jquery-1.7.2.min.js"></script>
+        <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
+        <script type="text/javascript" src="js/src/starview.js"></script>
+        <script type="text/javascript" src="js/libs/orb.js/core.js"></script>
+        <script type="text/javascript" src="js/libs/html5sql/html5sql.min.js"></script>
+        <script type="text/javascript" src="js/libs/stars_data.js"></script>
+        <script type="text/javascript" src="js/src/data.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+    </head>
+    <body>
+        <div id="main" class="canvasHolder" role="main">
+            <canvas id="stageCanvas" width="300" height="416" style="background-color:#000"></canvas>
+        </div>
+    </body>
 </html>
