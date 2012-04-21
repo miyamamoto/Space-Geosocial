@@ -1,6 +1,4 @@
 $(window).bind('space_geosocial_ready', function(){
-    console.log(window.space_geosocial);
-    console.log('yesssssss!!!');
     var s = window.space_geosocial;
     s.get_near_stars(function(stars){
         var $body = $('body');

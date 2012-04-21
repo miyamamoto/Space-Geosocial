@@ -44,13 +44,20 @@ var observer = {
   "altitude":0
 }
 
+var $win = $(window);
+$win.on('resize', function(){
+	SCREEN_WIDTH = $win.width();
+	SCREEN_HEIGHT = $win.height();
+	init();
+});
+
 function init() {
     console.log("SCREEN_SIZE");
     console.log(SCREEN_WIDTH);
     console.log(SCREEN_HEIGHT);
 
     //KASHIWAI API
-    var bsc = BSC.BSC;
+    var bsc = STARS_DATA;
     console.log("bsc");
     console.log(bsc[0]);
     var date = new Date();
