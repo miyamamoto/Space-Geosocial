@@ -3,9 +3,6 @@ data = STARS_DATA;
 #data versions
 stars_version = 1
 
-#set margin
-margin = 30
-
 #for orb.js
 date = new Date();
 time = new Orb.Time(date);

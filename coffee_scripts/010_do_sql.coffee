@@ -28,6 +28,9 @@ looks.create_table(check())
 
 reset_looks = ->
   looks.reset_looks =>
-    looks.get_near_stars =>
-      log 'hoge'
-    , 10, 10
+    set_global()
+
+set_global = ->
+  global = new Global(stars, looks)
+  window.space_geosocial = global
+  $(window).trigger('space_geosocial_ready')
