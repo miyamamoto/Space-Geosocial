@@ -8,6 +8,6 @@ $(window).bind('space_geosocial_ready', function(){
         for(var i = 0; i < stars.length; i++){
             $body.append('<p>id : ' + stars[i].id + ', name: ' + stars[i].name + '</p>');
         }
-    }, 10, 30, 10);
+    }, 10, 30, 15);
     //}, alpha = 0, gamma = 0, margin = 30);
 });
