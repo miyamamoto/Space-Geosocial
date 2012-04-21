@@ -4,7 +4,8 @@ class Global
   constructor: (@stars, @looks) ->
   reset_stars: (cb, stars) =>
     data = stars
-    reset_stars cb
+    @stars.reset_stars =>
+      @looks.reset_looks cb
   reset_params: (cb) =>
     looks.reset_params cb
   reset_looks: (cb) =>

@@ -7,13 +7,12 @@ class Looks extends Database
     elevation: 'REAL'
     hour_angle: 'REAL'
   }
-  @time
   @observer
   constructor: (cb) ->
     @reset_params cb
   
   reset_params: (cb) =>
-    @time = new Orb.Time(new Date());
+    time = new Orb.Time(new Date());
     navigator.geolocation.watchPosition (pos) =>
       log pos
       @observer = {
@@ -50,7 +49,7 @@ class Looks extends Database
             }
             
             observe = new Orb.Observation(@observer,target);
-            look = observe.horizontal(@time);
+            look = observe.horizontal(time);
             
             queries.push {
               sql: 'INSERT INTO ' + @table_name + ' (star_id, azimuth, elevation, hour_angle) VALUES (?, ?, ?, ?);'
