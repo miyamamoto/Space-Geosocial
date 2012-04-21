@@ -418,12 +418,25 @@
       this.looks = looks;
       this.get_near_stars = __bind(this.get_near_stars, this);
 
+      this.reset_looks = __bind(this.reset_looks, this);
+
       this.reset_params = __bind(this.reset_params, this);
+
+      this.reset_stars = __bind(this.reset_stars, this);
 
     }
 
+    Global.prototype.reset_stars = function(cb, stars) {
+      data = stars;
+      return reset_stars(cb);
+    };
+
     Global.prototype.reset_params = function(cb) {
       return looks.reset_params(cb);
+    };
+
+    Global.prototype.reset_looks = function(cb) {
+      return looks.reset_looks(cb);
     };
 
     Global.prototype.get_near_stars = function(cb, alpha, gamma, margin) {
@@ -437,13 +450,15 @@
       if (margin == null) {
         margin = 30;
       }
-      return looks.get_near_stars(function() {
-        var cnt, near_stars;
-        cnt = 0;
+      return looks.get_near_stars(function(error, tx, results) {
+        var cnt, near_stars, _ref;
         near_stars = [];
-        while (cnt < arguments[2].rows.length) {
-          near_stars.push(arguments[2].rows.item(cnt));
-          cnt++;
+        if (error === null && ((results != null ? (_ref = results.rows) != null ? _ref.length : void 0 : void 0) != null) && results.rows.length > 0) {
+          cnt = 0;
+          while (cnt < results.rows.length) {
+            near_stars.push(results.rows.item(cnt));
+            cnt++;
+          }
         }
         if ((cb != null) && typeof cb === 'function') {
           return cb(near_stars);
