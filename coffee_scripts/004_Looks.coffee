@@ -7,6 +7,30 @@ class Looks extends Database
     elevation: 'REAL'
     hour_angle: 'REAL'
   }
+  @time
+  @observer
+  constructor: (cb) ->
+    @reset_params cb
+  
+  reset_params: (cb) =>
+    @time = new Orb.Time(new Date());
+    navigator.geolocation.watchPosition (pos) =>
+      log pos
+      @observer = {
+        latitude: pos.coords.latitude
+        longitude: pos.coords.longitude
+        acc: pos.coords.accuracy
+      }
+      cb() if cb? and typeof(cb) is 'function'
+    , =>
+      #if can't get geo location, set Tokyo location.
+      @observer = {
+        latitude: 35.658
+        longitude: 139.741
+        acc: 0
+      }
+      cb() if cb? and typeof(cb) is 'function'
+
   reset_looks: (cb) =>
     stars = new Stars()
     stars.get_all (error, tx, results) =>
@@ -25,8 +49,8 @@ class Looks extends Database
               dec: star.ded
             }
             
-            observe = new Orb.Observation(observer,target);
-            look = observe.horizontal(time);
+            observe = new Orb.Observation(@observer,target);
+            look = observe.horizontal(@time);
             
             queries.push {
               sql: 'INSERT INTO ' + @table_name + ' (star_id, azimuth, elevation, hour_angle) VALUES (?, ?, ?, ?);'

@@ -3,6 +3,8 @@ class Global
   @stars
   constructor: (@stars, @looks) ->
   
+  reset_params: (cb) =>
+    looks.reset_params cb
   get_near_stars: (cb, alpha = 0, gamma = 0, margin = 30) =>
     looks.get_near_stars =>
       cnt = 0
