@@ -24,36 +24,28 @@ var onready = false;
 $(function(){
     onready = true;
 });
+
+var SCREEN_WIDTH    = innerWidth;
+var SCREEN_HEIGHT   = innerHeight;
+var STAR_NUM = 200;
+
+var canvas;
+var stage;
+var starfield;
+//var moon;
+var stars = new Array();
+var star_names = new Array();
+var star_azimuth = new Array();
+var star_elevation = new Array();
+var sky;
+var result = [];
+var screen_azimuth; //方位
+var screen_elevation; //高角度
+
 $(window).bind('space_geosocial_ready', function(){
-
-    var SCREEN_WIDTH    = innerWidth;
-    var SCREEN_HEIGHT   = innerHeight;
-    var STAR_NUM = 200;
-
-    var canvas;
-    var stage;
-    var starfield
-    //var moon;
-    var stars = new Array();
-    var star_names = new Array();
-    var star_azimuth = new Array();
-    var star_elevation = new Array();
-    var sky;
-    var result = [];
-    var screen_azimuth; //方位
-    var screen_elevation; //高角度
-
-    //　観測者は東京に居るとする（あとで取得する）
-    var observer = {
-      "latitude":35.658,
-      "longitude":139.741,
-      "altitude":0
-    }
-
     function init() {
     	window.space_geosocial.get_near_stars(function(stars_list){
-    		stars = stars_list;
-    		init2();
+    		init2(stars_list);
     	}, screen_azimuth, screen_elevation);
     	 // //KASHIWAI API
         // var bsc = STARS_DATA;
@@ -74,10 +66,12 @@ $(window).bind('space_geosocial_ready', function(){
         // console.log(result[0]);
     }
     
-    function init2(){
+    function init2(stars_list){
         console.log("SCREEN_SIZE");
         console.log(SCREEN_WIDTH);
         console.log(SCREEN_HEIGHT);
+        
+        STAR_NUM = stars_list.length;
 		
         // create a new stage and point it at our canvas:
         canvas = document.getElementById("testCanvas");
@@ -86,7 +80,7 @@ $(window).bind('space_geosocial_ready', function(){
         stage = new Stage(canvas);
 
         // draw the sky:
-        sky = new Shape();
+        sky = new Shape();console.log('hoge');
         sky.graphics.beginLinearGradientFill(["#204","#003","#000"], [0,0.15,0.6], 0, canvas.height, 0, 0);
         sky.graphics.drawRect(0, 0, canvas.width, canvas.height);
         stage.addChild(sky);
@@ -105,12 +99,13 @@ $(window).bind('space_geosocial_ready', function(){
         //stage.addChild(moon);
 
         // draw the moon in a separate shape, so it isn't part of the generative caching:
-        for(var i=0;i<stars.length;i++){
+
+        for(var i=0;i<STAR_NUM;i++){
             //Position
             var pos_x = Math.floor( Math.random() * SCREEN_WIDTH );
             var pos_y = Math.floor( Math.random() * SCREEN_HEIGHT );
             //var size = Math.floor( Math.random() * 4 ) + 1;
-            var size = (-stars[i].vmag + 5);
+            var size = (-stars_list[i].vmag + 5);
 
             //Shape
             stars[i] = new Shape();
@@ -120,7 +115,7 @@ $(window).bind('space_geosocial_ready', function(){
             stage.addChild(stars[i]);
 
             //star name
-            star_names[i] = new Text(stars[i].name, "18px Arial", "#AAA");
+            star_names[i] = new Text(stars_list[i].name, "18px Arial", "#AAA");
             star_names.textBaseline = "top";
            // star_names[i] = new Text("HW", "22px Arial", "#AAA");
             star_names[i].x = pos_x + 5;
@@ -128,72 +123,11 @@ $(window).bind('space_geosocial_ready', function(){
             stage.addChild(star_names[i]);
 
         }
-
+		
         // start the tick and point it at the window so we can do some work before updating the stage:
         Ticker.addListener(window);
         Ticker.setFPS(60);
     }
-
-    function stop() {
-        Ticker.removeListener(window);
-    }
-
-    function tick() {
-
-        // draw a vector star at a random location:
-        starfield.graphics.beginFill(Graphics.getRGB(0xFFFFFF,Math.random())).drawPolyStar(Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*4+1, 5, 0.93, Math.random()*360);
-
-        // draw the new vector onto the existing cache, compositing it with the "source-overlay" composite operation:
-        starfield.updateCache("source-overlay");
-
-        // if you omit the compositeOperation param in updateCache, it will clear the existing cache, and draw into it:
-        // in this demo, that has the effect of showing just the star that was drawn each tick.
-        //shape.updateCache();
-
-        // because the vector star has already been drawn to the cache, we can clear it right away:
-        starfield.graphics.clear();
-
-        // darken the sky:
-        sky.alpha -= 0.0005;
-
-        // move the moon across the sky:
-        //var w = canvas.width+200;
-        //moon.x = (moon.x+100+1+w)%w-100;
-        //moon.y = 250-Math.sin(moon.x/w*Math.PI)*150;
-
-        // move the moon across the sky:
-        var w = canvas.width+200;
-        for(var i=0;i<STAR_NUM;i++){
-            var azimuth = screen_azimuth;
-            var elevation = screen_elevation;
-            //stars[i].x = screen_azimuth;
-            //stars[i].y = screen_elevation;
-            //star_names[i].x = azimuth;
-            //star_names[i].y = elevation;
-
-            //stars[i].x = (stars[i].x+100+1+w)%w-100;
-            //stars[i].y = stars[i].y;
-            //star_names[i].x = (star_names[i].x+100+1+w)%w-100;
-            //star_names[i].y = star_names[i].y;
-            //stars[i].y = 250-Math.sin(stars[i].x/w*Math.PI)*150;
-        }
-        // draw the updates to stage:
-        stage.update();
-    }
-
-    function setValue(data) {
-        screen_azimuth = data.alpha;
-        screen_elevation = data.gamma;
-    };
-
-    window.ondeviceorientation = function(event) {
-        var data = {
-            alpha:(event.alpha < 180 ) ? event.alpha/10 : (event.alpha - 360)/10,
-            beta: event.beta/10 ,
-            gamma: (event.gamma + 90)/10
-        };
-        setValue(data);
-    };
 
     if(onready === true){
         console.log("true");
@@ -205,6 +139,66 @@ $(window).bind('space_geosocial_ready', function(){
         });
     }
 });
+function stop() {
+    Ticker.removeListener(window);
+}
+
+function tick() {
+
+    // draw a vector star at a random location:
+    starfield.graphics.beginFill(Graphics.getRGB(0xFFFFFF,Math.random())).drawPolyStar(Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*4+1, 5, 0.93, Math.random()*360);
+
+    // draw the new vector onto the existing cache, compositing it with the "source-overlay" composite operation:
+    starfield.updateCache("source-overlay");
+
+    // if you omit the compositeOperation param in updateCache, it will clear the existing cache, and draw into it:
+    // in this demo, that has the effect of showing just the star that was drawn each tick.
+    //shape.updateCache();
+
+    // because the vector star has already been drawn to the cache, we can clear it right away:
+    starfield.graphics.clear();
+
+    // darken the sky:
+    sky.alpha -= 0.0005;
+
+    // move the moon across the sky:
+    //var w = canvas.width+200;
+    //moon.x = (moon.x+100+1+w)%w-100;
+    //moon.y = 250-Math.sin(moon.x/w*Math.PI)*150;
+
+    // move the moon across the sky:
+    var w = canvas.width+200;
+    for(var i=0;i<STAR_NUM;i++){
+        var azimuth = screen_azimuth;
+        var elevation = screen_elevation;
+        //stars[i].x = screen_azimuth;
+        //stars[i].y = screen_elevation;
+        //star_names[i].x = azimuth;
+        //star_names[i].y = elevation;
+
+        //stars[i].x = (stars[i].x+100+1+w)%w-100;
+        //stars[i].y = stars[i].y;
+        //star_names[i].x = (star_names[i].x+100+1+w)%w-100;
+        //star_names[i].y = star_names[i].y;
+        //stars[i].y = 250-Math.sin(stars[i].x/w*Math.PI)*150;
+    }
+    // draw the updates to stage:
+    stage.update();
+}
+
+function setValue(data) {
+    screen_azimuth = data.alpha;
+    screen_elevation = data.gamma;
+};
+
+window.ondeviceorientation = function(event) {
+    var data = {
+        alpha:(event.alpha < 180 ) ? event.alpha/10 : (event.alpha - 360)/10,
+        beta: event.beta/10 ,
+        gamma: (event.gamma + 90)/10
+    };
+    setValue(data);
+};
 </script>
 </head>
 

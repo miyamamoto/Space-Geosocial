@@ -42,6 +42,7 @@ class Looks extends Database
           
         @delete_all =>
           queries = []
+          
           for star in stars
             target = {
               ra: star.rah
