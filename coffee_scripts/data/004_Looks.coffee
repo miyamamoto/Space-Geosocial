@@ -34,7 +34,7 @@ class Looks extends Database
     stars = new Stars()
     stars.get_all (error, tx, results) =>
       log '>>>>>', arguments
-      if error is null and results?.rows?.length? and results.rows.length > 0
+      if error is null and results?.rows?.length?
         stars = []
         cnt = 0
         while cnt < results.rows.length

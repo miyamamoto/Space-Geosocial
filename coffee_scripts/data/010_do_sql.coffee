@@ -28,7 +28,9 @@ next = ->
       log 'e?'
       stars.reset_stars_json =>
         log 'HHH2'
-        set_stars()
+        stars.reset_stars =>
+          log 'HHH2.222'
+          set_stars()
   , 'stars_version'
 
 set_stars = ->
