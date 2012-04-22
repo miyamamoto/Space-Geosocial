@@ -48,7 +48,7 @@
         _this = this;
       error = {};
       return html5sql.process(query, function(transaction, results) {
-        log('EXECUTE SUCCESS >> ', transaction, results, query);
+        log('EXECUTE SUCCESS >> ', transaction, results);
         if ((cb != null) && typeof cb === 'function') {
           return cb(null, transaction, results);
         }
@@ -408,7 +408,7 @@
           return _this.version = parseInt(data.version);
         },
         error: function(data) {
-          return _this.version = null;
+          return _this.version = 0;
         },
         complete: (cb != null) && typeof cb === 'function' ? cb() : void 0
       });
@@ -643,6 +643,7 @@
 
   set_stars = function() {
     var _this = this;
+    log('(^^)', stars.version);
     return config.set(function() {
       return reset_looks();
     }, 'stars_version', stars.version);

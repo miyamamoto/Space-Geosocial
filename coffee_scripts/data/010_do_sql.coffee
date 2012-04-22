@@ -33,6 +33,7 @@ next = ->
   , 'stars_version'
 
 set_stars = ->
+  log '(^^)', stars.version
   config.set( =>
     reset_looks()
   , 'stars_version', stars.version)

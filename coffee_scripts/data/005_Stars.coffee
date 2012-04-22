@@ -35,7 +35,7 @@ class Stars extends Database
         log 'DATA>VERSION', data
         @version = parseInt(data.version)
       error: (data) =>
-        @version = null
+        @version = 0
       complete:
         cb() if cb? and typeof(cb) is 'function'
     }
