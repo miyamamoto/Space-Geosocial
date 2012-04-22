@@ -32,6 +32,7 @@ class Stars extends Database
       url: @version_json_url
       dataType: 'json'
       success: (data) =>
+        log 'DATA>VERSION', data
         @version = parseInt(data.version)
       error: (data) =>
         @version = null
