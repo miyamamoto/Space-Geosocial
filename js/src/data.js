@@ -596,6 +596,7 @@
       this.vmag.text(vmag + this.vmag_suffix);
       this.cicnt.text(checkin_count + this.cicnt_suffix);
       this.submit.off('click').on('click', function() {
+        console.log('clicked');
         navigator.geolocation.watchPosition(function(pos) {
           return _this.send(id, pos.coords.latitude, pos.coords.longitude);
         }, function() {
