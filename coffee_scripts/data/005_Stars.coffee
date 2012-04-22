@@ -20,6 +20,7 @@ class Stars extends Database
     @data = data
     @reset_version cb
   check_version: (cb, current_version) =>
+    log 'VERSION *** ', parseInt(current_version) , @version, parseInt(current_version) < @version
     if parseInt(current_version) < @version
       @reset_stars_json =>
         @reset_stars cb
