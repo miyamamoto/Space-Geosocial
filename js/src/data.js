@@ -258,6 +258,7 @@
       stars = new Stars();
       return stars.get_all(function(error, tx, results) {
         var cnt, _ref;
+        log('>>>>>', arguments);
         if (error === null && ((results != null ? (_ref = results.rows) != null ? _ref.length : void 0 : void 0) != null) && results.rows.length > 0) {
           stars = [];
           cnt = 0;
@@ -599,7 +600,7 @@
     log('next start');
     return config.get(function(value) {
       log('valval', parseInt(value));
-      if ((value != null) && false) {
+      if ((value != null) && isNaN(parseInt(value)) !== true) {
         return stars.check_version(function() {
           log('HHH1');
           return set_stars();

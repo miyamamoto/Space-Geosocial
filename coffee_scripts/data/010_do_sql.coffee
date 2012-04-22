@@ -19,7 +19,7 @@ next = ->
   log 'next start'
   config.get (value) =>
     log 'valval', parseInt(value)
-    if value? and false
+    if value? and isNaN(parseInt(value)) isnt true
       stars.check_version( =>
         log 'HHH1'
         set_stars()

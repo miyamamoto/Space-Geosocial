@@ -33,6 +33,7 @@ class Looks extends Database
   reset_looks: (cb) =>
     stars = new Stars()
     stars.get_all (error, tx, results) =>
+      log '>>>>>', arguments
       if error is null and results?.rows?.length? and results.rows.length > 0
         stars = []
         cnt = 0
