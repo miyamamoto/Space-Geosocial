@@ -607,6 +607,7 @@
     };
 
     Dialog.prototype.send = function(star_id, lat, long) {
+      console.log(arguments);
       this.latitude.val(lat);
       this.longitude.val(lon);
       this.form.attr('action', '/index.php/checkin/reg_checkin/' + id);
