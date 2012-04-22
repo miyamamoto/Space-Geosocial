@@ -14,11 +14,36 @@
         <script type="text/javascript" src="js/libs/html5sql/html5sql.min.js"></script>
         <script type="text/javascript" src="js/libs/stars_data.js"></script>
         <script type="text/javascript" src="js/src/data.js"></script>
+        <script type="text/javascript" src="js/src/dialog.js"></script>
         <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" type="text/css" href="css/dialog.css">
     </head>
     <body>
         <div id="main" class="canvasHolder" role="main">
             <canvas id="stageCanvas" width="300" height="416" style="background-color:#000"></canvas>
+        </div>
+        <div id="dialog">
+        	<div id="dialog-container">
+        		<div id="dialog-left">
+        			<div id="text-container">
+        				<div id="text-left">
+		        			<p id="star-name">Sirius</p>
+		        			<p id="star-vmag">-1.5等星</p>
+	        			</div>
+	        			<p id="close-btn"><a href="#">X</a></p>
+	        			<p id="user-count">300人がチェックインしてます</p>
+        			</div>
+        			<div id="checkin-container">
+        				<textarea id="checkin-message"></textarea>
+        				<div id="checkin-btn-container">
+        					<a href="#" id="checkin-btn">チェックイン</a>
+        				</div>
+        			</div>
+        		</div>
+        		<div id="dialog-right">
+        			
+        		</div>
+        	</div>
         </div>
     </body>
 </html>
