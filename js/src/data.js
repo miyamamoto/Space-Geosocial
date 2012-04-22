@@ -115,7 +115,6 @@
     Database.prototype.delete_all = function(cb) {
       var query;
       query = 'DELETE FROM ' + this.table_name + ';';
-      log('!?', query);
       return this.execute(cb, query);
     };
 
@@ -232,7 +231,6 @@
       var _this = this;
       time = new Orb.Time(new Date());
       return navigator.geolocation.watchPosition(function(pos) {
-        log(pos);
         _this.observer = {
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
@@ -354,6 +352,7 @@
 
     Stars.prototype.schema = {
       id: 'INTEGER PRIMARY KEY AUTOINCREMENT',
+      starid: 'INTEGER',
       hr: 'TEXT',
       bfid: 'TEXT',
       name: 'TEXT',
@@ -373,7 +372,6 @@
       this.reset_version = __bind(this.reset_version, this);
 
       this.check_version = __bind(this.check_version, this);
-      log(data);
       this.data = data;
       this.reset_version(cb);
     }
@@ -394,56 +392,47 @@
         url: this.version_json_url,
         dataType: 'json',
         success: function(data) {
-          _this.version = parseInt(data.version);
-          if ((cb != null) && typeof cb === 'function') {
-            return cb();
-          }
+          return _this.version = parseInt(data.version);
         },
         error: function(data) {
-          return log('error happend');
-        }
+          return _this.version = null;
+        },
+        complete: (cb != null) && typeof cb === 'function' ? cb() : void 0
       });
     };
 
     Stars.prototype.reset_stars_json = function(cb) {
       var _this = this;
-      log('hogefuga');
       return $.ajax({
         type: 'get',
         url: this.stars_json_url,
         dataType: 'json',
         success: function(stars) {
-          _this.data = stars;
-          log(stars);
+          return _this.data = stars;
+        },
+        error: function() {},
+        complete: function() {
           if ((cb != null) && typeof cb === 'function') {
             return cb();
           }
-        },
-        error: function() {
-          return log('error >> ', arguments);
-        },
-        complete: function() {
-          return log('complete >> ', arguments);
         }
       });
     };
 
     Stars.prototype.reset_stars = function(cb) {
       var _this = this;
-      log('rest_stas');
       return this.delete_all(function() {
-        var bfID, cnt, ded, hr, insert_query, name, pmde, pmra, queries, rah, sp, star, vmag, _i, _len, _ref;
-        log('uhiaiaopakp');
-        insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
+        var bfID, cnt, ded, hr, insert_query, name, pmde, pmra, queries, rah, sid, sp, star, vmag, _i, _len, _ref;
+        insert_query = 'INSERT INTO stars (starid, hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
         queries = [];
         cnt = 0;
-        log(_this.data[0], _this.data[1]);
         _ref = _this.data;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           star = _ref[_i];
           if (!((star != null ? star.rah : void 0) != null) || !(star.ded != null)) {
             continue;
           }
+          sid = star.starid != null ? star.starid : 0;
           hr = star.hr != null ? star.hr : '';
           bfID = star.bfid != null ? star.bfid : '';
           name = star.name != null ? star.name : '';
@@ -455,10 +444,9 @@
           pmde = star.pmde != null ? star.pmde : 0;
           queries.push({
             sql: insert_query,
-            data: [hr, bfID, name, rah, ded, vmag, sp, pmra, pmde]
+            data: [starid, hr, bfID, name, rah, ded, vmag, sp, pmra, pmde]
           });
         }
-        log('uipoupoiuiouoiu', queries[0]);
         return _this.execute(cb, queries);
       });
     };
@@ -549,6 +537,10 @@
       this.name = $('#star-name', this.dialog);
       this.vmag = $('#star-vmag', this.dialog);
       this.cicnt = $('#user-count', this.dialog);
+      this.form = $('#checkin-form', this.dialog);
+      this.latitude = $('input[name="latitude"]', this.form);
+      this.longitude = $('input[name="longitude"]', this.form);
+      this.submit = $('#checkin-btn', this.form);
       this.vmag_suffix = '等星';
       this.cicnt_suffix = '人がチェックインしてます';
       this.close_btn = $('#close-btn', this.dialog);
@@ -558,13 +550,28 @@
       });
     }
 
-    Dialog.prototype.open = function(name, vmag, checkin_count) {
+    Dialog.prototype.open = function(id, name, vmag, checkin_count) {
+      var _this = this;
       if (checkin_count == null) {
         checkin_count = 0;
       }
       this.name.text(name);
       this.vmag.text(vmag + this.vmag_suffix);
       this.cicnt.text(checkin_count + this.cicnt_suffix);
+      this.submit.off('click').on('click', function() {
+        var looks;
+        looks = new Looks(function() {
+          var lat, lon, ob;
+          ob = looks.observer;
+          lat = ob.latitude;
+          lon = ob.longitude;
+          _this.latitude.val(lat);
+          _this.longitude.val(lon);
+          _this.form.attr('action', '/index.php/checkin/reg_checkin/' + id);
+          return _this.form.submit();
+        });
+        return false;
+      });
       return this.dialog.slideDown();
     };
 
@@ -592,7 +599,6 @@
   config.create_table(check);
 
   stars = new Stars(function() {
-    log('UHIHIHIHIHI');
     return stars.create_table(check);
   });
 
@@ -602,20 +608,14 @@
 
   next = function() {
     var _this = this;
-    log('next start');
     return config.get(function(value) {
-      log('valval', parseInt(value));
       if ((value != null) && isNaN(parseInt(value)) !== true) {
         return stars.check_version(function() {
-          log('HHH1');
           return set_stars();
         }, value);
       } else {
-        log('e?');
         return stars.reset_stars_json(function() {
-          log('HHH2');
           return stars.reset_stars(function() {
-            log('HHH2.222');
             return set_stars();
           });
         });
@@ -625,18 +625,14 @@
 
   set_stars = function() {
     var _this = this;
-    log('HHH3');
     return config.set(function() {
-      log('HHH4');
       return reset_looks();
     }, 'stars_version', stars.version);
   };
 
   reset_looks = function() {
     var _this = this;
-    log('HHH5');
     return looks.reset_looks(function() {
-      log('HHH6');
       return set_global();
     });
   };

@@ -14,7 +14,6 @@ class Looks extends Database
   reset_params: (cb) =>
     time = new Orb.Time(new Date());
     navigator.geolocation.watchPosition (pos) =>
-      log pos
       @observer = {
         latitude: pos.coords.latitude
         longitude: pos.coords.longitude

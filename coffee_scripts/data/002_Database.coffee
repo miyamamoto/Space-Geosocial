@@ -49,7 +49,6 @@ class Database
     @execute cb, query
   delete_all: (cb) =>
     query = 'DELETE FROM ' + @table_name + ';'
-    log '!?', query
     @execute cb, query
   truncate: (cb) =>
     @drop_table =>
