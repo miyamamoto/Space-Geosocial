@@ -394,6 +394,9 @@
           if ((cb != null) && typeof cb === 'function') {
             return cb();
           }
+        },
+        error: function(data) {
+          return log('error happend');
         }
       });
     };
