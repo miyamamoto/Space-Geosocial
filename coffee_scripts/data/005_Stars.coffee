@@ -28,6 +28,8 @@ class Stars extends Database
       success: (data) =>
         @version = parseInt(data.version)
         cb() if cb? and typeof(cb) is 'function'
+      error: (data) =>
+        log 'error happend'
     }
   reset_stars_json: (cb) =>
     log 'hogefuga'
