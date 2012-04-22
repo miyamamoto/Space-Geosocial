@@ -393,8 +393,9 @@
           return _this.reset_stars(cb);
         });
       } else {
+        log('S3', cb);
         if ((cb != null) && typeof cb === 'function') {
-          return cb;
+          return cb();
         }
       }
     };
