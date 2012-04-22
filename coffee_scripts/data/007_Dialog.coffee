@@ -32,6 +32,7 @@ class Dialog
     @dialog.slideDown()
     
   send: (star_id, lat, long)=>
+    console.log arguments
     @latitude.val lat
     @longitude.val lon
     @form.attr 'action', '/index.php/checkin/reg_checkin/' + id
