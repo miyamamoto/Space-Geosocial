@@ -25,6 +25,7 @@ next = ->
         set_stars()
       , value)
     else
+      log 'e?'
       stars.reset_stars_json =>
         log 'HHH2'
         set_stars()
