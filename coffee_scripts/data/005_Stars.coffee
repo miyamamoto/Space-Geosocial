@@ -22,7 +22,9 @@ class Stars extends Database
   check_version: (cb, current_version) =>
     log 'VERSION *** ', parseInt(current_version) , @version, parseInt(current_version) < @version
     if parseInt(current_version) < @version
+      log 'S1'
       @reset_stars_json =>
+        log 'S2'
         @reset_stars cb
     else
       cb if cb? and typeof(cb) is 'function'
@@ -46,9 +48,12 @@ class Stars extends Database
       url: @stars_json_url
       dataType: 'json'
       success: (stars) =>
+        log 'R1'
         @data = stars
       error: =>
+        log 'R2'
       complete: =>
+        log 'R3'
         cb() if cb? and typeof(cb) is 'function'
     }
   reset_stars: (cb) =>
