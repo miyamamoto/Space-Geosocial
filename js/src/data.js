@@ -259,7 +259,7 @@
       return stars.get_all(function(error, tx, results) {
         var cnt, _ref;
         log('>>>>>', arguments);
-        if (error === null && ((results != null ? (_ref = results.rows) != null ? _ref.length : void 0 : void 0) != null) && results.rows.length > 0) {
+        if (error === null && ((results != null ? (_ref = results.rows) != null ? _ref.length : void 0 : void 0) != null)) {
           stars = [];
           cnt = 0;
           while (cnt < results.rows.length) {
@@ -609,7 +609,10 @@
         log('e?');
         return stars.reset_stars_json(function() {
           log('HHH2');
-          return set_stars();
+          return stars.reset_stars(function() {
+            log('HHH2.222');
+            return set_stars();
+          });
         });
       }
     }, 'stars_version');
