@@ -9,13 +9,16 @@ config = new Config()
 config.create_table(check)
 
 stars = new Stars =>
+  log 'UHIHIHIHIHI'
   stars.create_table(check)
 
 looks = new Looks()
 looks.create_table(check)
 
 next = ->
+  log 'next start'
   config.get (value) =>
+    log 'valval', value
     if value?
       stars.check_version( =>
         log 'HHH1'
