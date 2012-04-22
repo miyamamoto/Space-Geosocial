@@ -34,7 +34,7 @@ class Dialog
       return false
     )
     
-    
+    console.log(@dialog)
     @dialog.slideDown()
     
   

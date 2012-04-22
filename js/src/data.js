@@ -607,6 +607,7 @@
         });
         return false;
       });
+      console.log(this.dialog);
       return this.dialog.slideDown();
     };
 
