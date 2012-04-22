@@ -20,6 +20,7 @@ class Config extends Database
       cb(value)
     , query
   set: (cb, name, value) =>
+    log name, value
     @get (err, tx, results) =>
       if results?.rows?.length? and results.rows.length > 0
         query = [

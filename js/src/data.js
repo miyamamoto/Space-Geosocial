@@ -179,6 +179,7 @@
 
     Config.prototype.set = function(cb, name, value) {
       var _this = this;
+      log(name, value);
       return this.get(function(err, tx, results) {
         var query, _ref;
         if (((results != null ? (_ref = results.rows) != null ? _ref.length : void 0 : void 0) != null) && results.rows.length > 0) {
