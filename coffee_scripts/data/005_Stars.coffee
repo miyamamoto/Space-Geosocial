@@ -1,5 +1,6 @@
 class Stars extends Database
-  stars_json_url: 'http://49.212.141.168/index.php'
+  stars_json_url: '/index.php/checkin/starlist'
+  version_json_url: '/index.php/checkin/dbversion'
   table_name: 'stars'
   schema: {
     id: 'INTEGER PRIMARY KEY AUTOINCREMENT'
@@ -14,13 +15,20 @@ class Stars extends Database
     pmde: 'REAL'
   }
   constructor: (cb) ->
-    #あとでAjaxでバージョン情報を取得する処理を追加
-    @version = 2
+    @reset_version cb
   check_version: (cb, current_version) =>
-    log parseInt(current_version) , @version
     if parseInt(current_version) < @version
       @reset_stars_json =>
         reset_stars cb
+  reset_version: (cb) =>
+    $.ajax {
+      type: 'get'
+      url: @version_json_url
+      dataType: 'json'
+      success: (data) =>
+        @version = parseInt(data.version)
+        cb() if cb? and typeof(cb) is 'function'
+    }
   reset_stars_json: (cb) =>
     log 'hogefuga'
     $.ajax {

@@ -3,7 +3,8 @@
   var Config, Database, Dialog, Global, Looks, Stars, check, config, current_count, data, debugmode, log, looks, next, reset_looks, set_global, stars, table_count, time,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    _this = this;
 
   data = STARS_DATA;
 
@@ -343,7 +344,9 @@
 
     Stars.name = 'Stars';
 
-    Stars.prototype.stars_json_url = 'http://49.212.141.168/index.php';
+    Stars.prototype.stars_json_url = '/index.php/checkin/starlist';
+
+    Stars.prototype.version_json_url = '/index.php/checkin/dbversion';
 
     Stars.prototype.table_name = 'stars';
 
@@ -365,18 +368,34 @@
 
       this.reset_stars_json = __bind(this.reset_stars_json, this);
 
+      this.reset_version = __bind(this.reset_version, this);
+
       this.check_version = __bind(this.check_version, this);
-      this.version = 2;
+      this.reset_version(cb);
     }
 
     Stars.prototype.check_version = function(cb, current_version) {
       var _this = this;
-      log(parseInt(current_version), this.version);
       if (parseInt(current_version) < this.version) {
         return this.reset_stars_json(function() {
           return reset_stars(cb);
         });
       }
+    };
+
+    Stars.prototype.reset_version = function(cb) {
+      var _this = this;
+      return $.ajax({
+        type: 'get',
+        url: this.version_json_url,
+        dataType: 'json',
+        success: function(data) {
+          _this.version = parseInt(data.version);
+          if ((cb != null) && typeof cb === 'function') {
+            return cb();
+          }
+        }
+      });
     };
 
     Stars.prototype.reset_stars_json = function(cb) {
@@ -563,9 +582,9 @@
 
   config.create_table(check);
 
-  stars = new Stars();
-
-  stars.create_table(check);
+  stars = new Stars(function() {
+    return stars.create_table(check);
+  });
 
   looks = new Looks();
 
@@ -574,7 +593,6 @@
   next = function() {
     var _this = this;
     return config.get(function(value) {
-      log('VALVAL', value);
       if (value != null) {
         return stars.check_version(function() {
           return config.set(function() {
