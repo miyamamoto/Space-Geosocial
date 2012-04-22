@@ -596,11 +596,15 @@
       this.vmag.text(vmag + this.vmag_suffix);
       this.cicnt.text(checkin_count + this.cicnt_suffix);
       this.submit.off('click').on('click', function() {
+        var send;
         console.log('clicked');
+        send = _this.send;
         navigator.geolocation.watchPosition(function(pos) {
-          return _this.send(id, pos.coords.latitude, pos.coords.longitude);
+          console.log('send', send);
+          return send(id, pos.coords.latitude, pos.coords.longitude);
         }, function() {
-          return _this.send(id, 35.658, 139.741);
+          console.log('send2', send);
+          return send(id, 35.658, 139.741);
         });
         return false;
       });
