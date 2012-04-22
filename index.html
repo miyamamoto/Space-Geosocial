@@ -33,10 +33,15 @@
                         <p id="user-count">300人がチェックインしてます</p>
                     </div>
                     <div id="checkin-container">
-                        <textarea id="checkin-message"></textarea>
-                        <div id="checkin-btn-container">
-                            <a href="#" id="checkin-btn">チェックイン</a>
-                        </div>
+                    	<form method="post" id="checkin-form">
+	                        <textarea id="checkin-message" name="message"></textarea>
+	                        <div id="checkin-btn-container">
+	                            <a href="#" id="checkin-btn">チェックイン</a>
+	                        </div>
+	                        <input type="hidden" name="uid" value="1" />
+		  			        <input type="hidden" name="latitude" value="" />
+	  				        <input type="hidden" name="longtitude" value="" />
+	  				    </form>
                     </div>
                 </div>
                 <div id="dialog-right">

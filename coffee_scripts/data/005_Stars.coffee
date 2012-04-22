@@ -4,6 +4,7 @@ class Stars extends Database
   table_name: 'stars'
   schema: {
     id: 'INTEGER PRIMARY KEY AUTOINCREMENT'
+    starid: 'INTEGER'
     hr: 'TEXT'
     bfid: 'TEXT'
     name: 'TEXT'
@@ -15,7 +16,6 @@ class Stars extends Database
     pmde: 'REAL'
   }
   constructor: (cb) ->
-    log data
     @data = data
     @reset_version cb
   check_version: (cb, current_version) =>
@@ -29,39 +29,33 @@ class Stars extends Database
       dataType: 'json'
       success: (data) =>
         @version = parseInt(data.version)
-        cb() if cb? and typeof(cb) is 'function'
       error: (data) =>
-        log 'error happend'
+        @version = null
+      complete:
+        cb() if cb? and typeof(cb) is 'function'
     }
   reset_stars_json: (cb) =>
-    log 'hogefuga'
     $.ajax {
       type: 'get'
       url: @stars_json_url
       dataType: 'json'
       success: (stars) =>
         @data = stars
-        log stars
-        cb() if cb? and typeof(cb) is 'function'
       error: =>
-        log 'error >> ', arguments
       complete: =>
-        log 'complete >> ', arguments
-      
+        cb() if cb? and typeof(cb) is 'function'
     }
   reset_stars: (cb) =>
-    log 'rest_stas'
     @delete_all =>
-      log 'uhiaiaopakp'
-      insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
+      insert_query = 'INSERT INTO stars (starid, hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
       queries = []
       cnt = 0
       
-      log @data[0], @data[1]
       for star in @data
         if !(star?.rah?) or !(star.ded?)
           continue
-  
+        
+        sid = if star.starid? then star.starid else 0
         hr = if star.hr? then star.hr else ''
         bfID = if star.bfid? then star.bfid else ''
         name = if star.name? then star.name else ''
@@ -74,7 +68,7 @@ class Stars extends Database
         
         queries.push {
           sql: insert_query
-          data: [hr, bfID, name, rah, ded, vmag, sp, pmra, pmde]
+          data: [starid, hr, bfID, name, rah, ded, vmag, sp, pmra, pmde]
         }
-      log 'uipoupoiuiouoiu', queries[0]
+      
       @execute cb, queries
