@@ -411,6 +411,7 @@
           return _this.version = 0;
         },
         complete: function() {
+          log('cb', cb);
           if ((cb != null) && typeof cb === 'function') {
             return cb();
           }
