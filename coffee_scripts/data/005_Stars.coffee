@@ -55,7 +55,7 @@ class Stars extends Database
         if !(star?.rah?) or !(star.ded?)
           continue
         
-        sid = if star.starid? then star.starid else 0
+        starid = if star.starid? then star.starid else 0
         hr = if star.hr? then star.hr else ''
         bfID = if star.bfid? then star.bfid else ''
         name = if star.name? then star.name else ''
