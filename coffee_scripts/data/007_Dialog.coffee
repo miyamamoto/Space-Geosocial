@@ -22,6 +22,7 @@ class Dialog
     @vmag.text vmag + @vmag_suffix
     @cicnt.text checkin_count + @cicnt_suffix
     @submit.off('click').on('click', =>
+      console.log('clicked')
       navigator.geolocation.watchPosition (pos) =>
         @send(id, pos.coords.latitude, pos.coords.longitude)
       , =>
