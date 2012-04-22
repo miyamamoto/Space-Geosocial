@@ -23,6 +23,8 @@ class Stars extends Database
     if parseInt(current_version) < @version
       @reset_stars_json =>
         @reset_stars cb
+    else
+      cb if cb? and typeof(cb) is 'function'
   reset_version: (cb) =>
     $.ajax {
       type: 'get'

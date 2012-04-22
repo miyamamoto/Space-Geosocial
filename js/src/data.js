@@ -389,6 +389,10 @@
         return this.reset_stars_json(function() {
           return _this.reset_stars(cb);
         });
+      } else {
+        if ((cb != null) && typeof cb === 'function') {
+          return cb;
+        }
       }
     };
 
