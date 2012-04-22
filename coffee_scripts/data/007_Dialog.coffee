@@ -5,6 +5,7 @@ class Dialog
     @cicnt = $('#user-count', @dialog)
     
     @form = $('#checkin-form', @dialog)
+    @message = $('#checkin-message', @dialog)
     @latitude = $('input[name="latitude"]', @form)
     @longitude = $('input[name="longitude"]', @form)
     @submit = $('#checkin-btn', @form)
@@ -18,11 +19,11 @@ class Dialog
       false
     
   open: (id, name, vmag, checkin_count = 0) =>
+    @message.text ''
     @name.text name
     @vmag.text vmag + @vmag_suffix
     @cicnt.text checkin_count + @cicnt_suffix
     @submit.off('click').on('click', =>
-      console.log('clicked')
       #send = @send
       # navigator.geolocation.watchPosition (pos) =>
         # console.log('send', send)
@@ -30,14 +31,13 @@ class Dialog
       # , =>
         # console.log('send2', send)
         # send(id, 35.658, 139.741)
-      @send(id, 35.658, 139.741)
+      @send(id, 35.658, 139.741)  #東京固定
       return false
     )
     
     @dialog.slideDown()
     
   send: (star_id, lat, long)=>
-    console.log arguments
     @latitude.val lat
     @longitude.val long
     @form.attr 'action', '/index.php/checkin/reg_checkin/' + star_id

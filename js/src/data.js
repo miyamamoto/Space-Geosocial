@@ -575,6 +575,7 @@
       this.vmag = $('#star-vmag', this.dialog);
       this.cicnt = $('#user-count', this.dialog);
       this.form = $('#checkin-form', this.dialog);
+      this.message = $('#checkin-message', this.dialog);
       this.latitude = $('input[name="latitude"]', this.form);
       this.longitude = $('input[name="longitude"]', this.form);
       this.submit = $('#checkin-btn', this.form);
@@ -592,11 +593,11 @@
       if (checkin_count == null) {
         checkin_count = 0;
       }
+      this.message.text('');
       this.name.text(name);
       this.vmag.text(vmag + this.vmag_suffix);
       this.cicnt.text(checkin_count + this.cicnt_suffix);
       this.submit.off('click').on('click', function() {
-        console.log('clicked');
         _this.send(id, 35.658, 139.741);
         return false;
       });
@@ -604,7 +605,6 @@
     };
 
     Dialog.prototype.send = function(star_id, lat, long) {
-      console.log(arguments);
       this.latitude.val(lat);
       this.longitude.val(long);
       this.form.attr('action', '/index.php/checkin/reg_checkin/' + star_id);
