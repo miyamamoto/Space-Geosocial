@@ -60,6 +60,7 @@ class Stars extends Database
       log data[0], data[1]
       for star in @data
         if !(star?.RAh?) or !(star.DEd?)
+          log star.RAh, star.DEd
           continue
         
         target = {
@@ -77,9 +78,9 @@ class Stars extends Database
         pmra = if star.pmRA? then star.pmRA else 0
         pmde = if star.pmDE? then star.pmDE else 0
         
-        queries.push({
+        queries.push {
           sql: insert_query
           data: [hr, bfID, name, rah, ded, vmag, sp, pmra, pmde]
-        })
+        }
       log 'uipoupoiuiouoiu', queries[0]
       @execute cb, queries

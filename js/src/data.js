@@ -442,6 +442,7 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           star = _ref[_i];
           if (!((star != null ? star.RAh : void 0) != null) || !(star.DEd != null)) {
+            log(star.RAh, star.DEd);
             continue;
           }
           target = {
