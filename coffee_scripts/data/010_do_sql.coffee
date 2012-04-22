@@ -4,10 +4,10 @@ current_count = 0
 inicheck = ->
   current_count++
   if current_count >= table_count
+    current_count = 0
     stars.create_table(check)
     config.create_table(check)
     looks.create_table(check)
-    
 check = ->
   current_count++
   if current_count >= table_count

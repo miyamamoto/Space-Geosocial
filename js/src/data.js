@@ -609,6 +609,7 @@
   inicheck = function() {
     current_count++;
     if (current_count >= table_count) {
+      current_count = 0;
       stars.create_table(check);
       config.create_table(check);
       return looks.create_table(check);
