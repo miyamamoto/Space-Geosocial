@@ -702,7 +702,7 @@
 
   glob_done = function() {
     var dialog, global;
-    dialog = new Dialog($('dialog'));
+    dialog = new Dialog($('#dialog'));
     global = new Global(stars, looks, dialog);
     window.space_geosocial = global;
     return $(window).trigger('space_geosocial_ready');
