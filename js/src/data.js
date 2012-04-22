@@ -387,7 +387,9 @@
       var _this = this;
       log('VERSION *** ', parseInt(current_version), this.version, parseInt(current_version) < this.version);
       if (parseInt(current_version) < this.version) {
+        log('S1');
         return this.reset_stars_json(function() {
+          log('S2');
           return _this.reset_stars(cb);
         });
       } else {
@@ -426,10 +428,14 @@
         url: this.stars_json_url,
         dataType: 'json',
         success: function(stars) {
+          log('R1');
           return _this.data = stars;
         },
-        error: function() {},
+        error: function() {
+          return log('R2');
+        },
         complete: function() {
+          log('R3');
           if ((cb != null) && typeof cb === 'function') {
             return cb();
           }
