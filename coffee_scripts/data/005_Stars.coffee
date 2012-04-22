@@ -49,9 +49,6 @@ class Stars extends Database
           ra: star.RAh
           dec: star.DEd
         }
-        log observer
-        observe = new Orb.Observation(observer,target)
-        look = observe.horizontal(time)
   
         hr = if star.HR? then star.HR else ''
         bfID = if star.bfID? then star.bfID else ''
