@@ -27,7 +27,8 @@ class Stars extends Database
         log 'S2'
         @reset_stars cb
     else
-      cb if cb? and typeof(cb) is 'function'
+      log 'S3', cb
+      cb() if cb? and typeof(cb) is 'function'
   reset_version: (cb) =>
     $.ajax {
       type: 'get'
