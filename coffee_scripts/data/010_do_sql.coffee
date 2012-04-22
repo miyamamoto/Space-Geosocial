@@ -23,12 +23,17 @@ next = ->
   config.get (value) =>
     log 'VERSION >>> ', value
     if value? and isNaN(parseInt(value)) isnt true
+      log 'H1'
       stars.check_version( =>
+        log 'H2'
         set_stars()
       , value)
     else
+      log 'H3'
       stars.reset_stars_json =>
+        log 'H4'
         stars.reset_stars =>
+          log 'H5'
           set_stars()
   , 'stars_version'
 

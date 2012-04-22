@@ -633,12 +633,17 @@
     return config.get(function(value) {
       log('VERSION >>> ', value);
       if ((value != null) && isNaN(parseInt(value)) !== true) {
+        log('H1');
         return stars.check_version(function() {
+          log('H2');
           return set_stars();
         }, value);
       } else {
+        log('H3');
         return stars.reset_stars_json(function() {
+          log('H4');
           return stars.reset_stars(function() {
+            log('H5');
             return set_stars();
           });
         });
