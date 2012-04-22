@@ -567,7 +567,7 @@
       this.dialog = dialog;
       this.close = __bind(this.close, this);
 
-      this.submit = __bind(this.submit, this);
+      this.send = __bind(this.send, this);
 
       this.open = __bind(this.open, this);
 
@@ -597,16 +597,16 @@
       this.cicnt.text(checkin_count + this.cicnt_suffix);
       this.submit.off('click').on('click', function() {
         navigator.geolocation.watchPosition(function(pos) {
-          return _this.submit(id, pos.coords.latitude, pos.coords.longitude);
+          return _this.send(id, pos.coords.latitude, pos.coords.longitude);
         }, function() {
-          return _this.submit(id, 35.658, 139.741);
+          return _this.send(id, 35.658, 139.741);
         });
         return false;
       });
       return this.dialog.slideDown();
     };
 
-    Dialog.prototype.submit = function(star_id, lat, long) {
+    Dialog.prototype.send = function(star_id, lat, long) {
       this.latitude.val(lat);
       this.longitude.val(lon);
       this.form.attr('action', '/index.php/checkin/reg_checkin/' + id);
