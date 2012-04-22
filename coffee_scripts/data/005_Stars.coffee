@@ -83,4 +83,6 @@ class Stars extends Database
           data: [starid, hr, bfID, name, rah, ded, vmag, sp, pmra, pmde]
         }
       
+      log 'qqq', queries.length, queries[0]
+      
       @execute cb, queries

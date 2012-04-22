@@ -12,7 +12,7 @@
 
   html5sql.openDatabase('space_geosocial', 'Space Geosocial', 10 * 1024 * 1024);
 
-  debugmode = true;
+  debugmode = false;
 
   log = function() {
     if (debugmode === true && ((typeof console !== "undefined" && console !== null ? console.log : void 0) != null)) {
@@ -480,6 +480,7 @@
             data: [starid, hr, bfID, name, rah, ded, vmag, sp, pmra, pmde]
           });
         }
+        log('qqq', queries.length, queries[0]);
         return _this.execute(cb, queries);
       });
     };
