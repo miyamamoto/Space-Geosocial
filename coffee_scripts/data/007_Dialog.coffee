@@ -40,7 +40,7 @@ class Dialog
     console.log arguments
     @latitude.val lat
     @longitude.val long
-    @form.attr 'action', '/index.php/checkin/reg_checkin/' + id
+    @form.attr 'action', '/index.php/checkin/reg_checkin/' + star_id
     @form.submit()
   close: =>
     @dialog.slideUp()
