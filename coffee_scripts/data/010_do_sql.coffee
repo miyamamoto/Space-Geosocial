@@ -18,20 +18,26 @@ next = ->
   config.get (value) =>
     if value?
       stars.check_version( =>
+        log 'HHH1'
         set_stars()
       , value)
     else
       stars.reset_stars_json =>
+        log 'HHH2'
         set_stars()
   , 'stars_version'
 
 set_stars = ->
+  log 'HHH3'
   config.set( =>
+    log 'HHH4'
     reset_looks()
   , 'stars_version', stars.stars_version)
 
 reset_looks = ->
+  log 'HHH5'
   looks.reset_looks =>
+    log 'HHH6'
     set_global()
 
 set_global = ->
