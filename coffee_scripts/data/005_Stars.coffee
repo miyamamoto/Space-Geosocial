@@ -59,24 +59,18 @@ class Stars extends Database
       
       log @data[0], @data[1]
       for star in @data
-        if !(star?.RAh?) or !(star.DEd?)
-          log star.RAh, star.DEd
+        if !(star?.rah?) or !(star.ded?)
           continue
-        
-        target = {
-          ra: star.RAh
-          dec: star.DEd
-        }
   
-        hr = if star.HR? then star.HR else ''
-        bfID = if star.bfID? then star.bfID else ''
-        name = if star.Name? then star.Name else ''
-        rah = if star.RAh? then star.RAh else 0
-        ded = if star.DEd? then star.DEd else 0
-        vmag = if star.Vmag? then star.Vmag else 0
-        sp = if star.Sp? then star.Sp else ''
-        pmra = if star.pmRA? then star.pmRA else 0
-        pmde = if star.pmDE? then star.pmDE else 0
+        hr = if star.hr? then star.hr else ''
+        bfID = if star.bfid? then star.bfid else ''
+        name = if star.name? then star.name else ''
+        rah = if star.rah? then star.rah else 0
+        ded = if star.ded? then star.ded else 0
+        vmag = if star.vmag? then star.vmag else 0
+        sp = if star.sp? then star.sp else ''
+        pmra = if star.pmra? then star.pmra else 0
+        pmde = if star.pmde? then star.pmde else 0
         
         queries.push {
           sql: insert_query
