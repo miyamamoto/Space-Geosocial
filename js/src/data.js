@@ -412,6 +412,7 @@
         dataType: 'json',
         success: function(stars) {
           data = stars;
+          log(stars);
           if ((cb != null) && typeof cb === 'function') {
             return cb();
           }
@@ -434,6 +435,7 @@
         insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
         queries = [];
         cnt = 0;
+        log(data);
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           star = data[_i];
           if (!((star != null ? star.RAh : void 0) != null) || !(star.DEd != null)) {

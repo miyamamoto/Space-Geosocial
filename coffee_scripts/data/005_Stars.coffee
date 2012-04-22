@@ -39,6 +39,7 @@ class Stars extends Database
       dataType: 'json'
       success: (stars) =>
         data = stars
+        log stars
         cb() if cb? and typeof(cb) is 'function'
       error: =>
         log 'error >> ', arguments
@@ -53,6 +54,8 @@ class Stars extends Database
       insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
       queries = []
       cnt = 0
+      
+      log data
       for star in data
         if !(star?.RAh?) or !(star.DEd?)
           continue
