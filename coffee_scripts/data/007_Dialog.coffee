@@ -21,28 +21,21 @@ class Dialog
     @name.text name
     @vmag.text vmag + @vmag_suffix
     @cicnt.text checkin_count + @cicnt_suffix
-    console.log(@submit);
     @submit.off('click').on('click', =>
-      $form = @form
-      $lat = @latitude
-      $lon = @longitude
-      looks = new Looks =>
-        ob = looks.observer
-        lat = ob.latitude
-        lon = ob.longitude
-        $lat.val lat
-        $lon.val lon
-        console.log $form
-        $form.attr 'action', '/index.php/checkin/reg_checkin/' + id
-        $form.submit()
-        
+      navigator.geolocation.watchPosition (pos) =>
+        @submit(id, pos.coords.latitude, pos.coords.longitude)
+      , =>
+        @submit(id, 35.658, 139.741)
       return false
     )
     
-    console.log(@dialog)
     @dialog.slideDown()
     
-  
+  submit: (star_id, lat, long)=>
+    @latitude.val lat
+    @longitude.val lon
+    @form.attr 'action', '/index.php/checkin/reg_checkin/' + id
+    @form.submit()
   close: =>
     @dialog.slideUp()
     
