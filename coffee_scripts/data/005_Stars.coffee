@@ -57,7 +57,7 @@ class Stars extends Database
       queries = []
       cnt = 0
       
-      log data[0], data[1]
+      log @data[0], @data[1]
       for star in @data
         if !(star?.RAh?) or !(star.DEd?)
           log star.RAh, star.DEd
