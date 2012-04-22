@@ -423,7 +423,7 @@
     Stars.prototype.reset_stars = function(cb) {
       var _this = this;
       return this.delete_all(function() {
-        var bfID, cnt, ded, hr, insert_query, name, pmde, pmra, queries, rah, sid, sp, star, vmag, _i, _len, _ref;
+        var bfID, cnt, ded, hr, insert_query, name, pmde, pmra, queries, rah, sp, star, starid, vmag, _i, _len, _ref;
         insert_query = 'INSERT INTO stars (starid, hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
         queries = [];
         cnt = 0;
@@ -433,7 +433,7 @@
           if (!((star != null ? star.rah : void 0) != null) || !(star.ded != null)) {
             continue;
           }
-          sid = star.starid != null ? star.starid : 0;
+          starid = star.starid != null ? star.starid : 0;
           hr = star.hr != null ? star.hr : '';
           bfID = star.bfid != null ? star.bfid : '';
           name = star.name != null ? star.name : '';
