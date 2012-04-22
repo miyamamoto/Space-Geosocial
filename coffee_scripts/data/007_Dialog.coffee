@@ -23,15 +23,15 @@ class Dialog
     @cicnt.text checkin_count + @cicnt_suffix
     @submit.off('click').on('click', =>
       navigator.geolocation.watchPosition (pos) =>
-        @submit(id, pos.coords.latitude, pos.coords.longitude)
+        @send(id, pos.coords.latitude, pos.coords.longitude)
       , =>
-        @submit(id, 35.658, 139.741)
+        @send(id, 35.658, 139.741)
       return false
     )
     
     @dialog.slideDown()
     
-  submit: (star_id, lat, long)=>
+  send: (star_id, lat, long)=>
     @latitude.val lat
     @longitude.val lon
     @form.attr 'action', '/index.php/checkin/reg_checkin/' + id
