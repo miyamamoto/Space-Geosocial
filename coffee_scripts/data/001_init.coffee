@@ -1,8 +1,5 @@
 data = STARS_DATA;
 
-#data versions
-stars_version = 1
-
 #observe
 time = new Orb.Time(new Date());
 

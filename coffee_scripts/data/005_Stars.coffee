@@ -1,4 +1,6 @@
 class Stars extends Database
+  stars_json_url: '/index.php/checkin/starlist'
+  version_json_url: '/index.php/checkin/dbversion'
   table_name: 'stars'
   schema: {
     id: 'INTEGER PRIMARY KEY AUTOINCREMENT'
@@ -12,6 +14,38 @@ class Stars extends Database
     pmra: 'REAL'
     pmde: 'REAL'
   }
+  constructor: (cb) ->
+    @reset_version cb
+  check_version: (cb, current_version) =>
+    if parseInt(current_version) < @version
+      @reset_stars_json =>
+        @reset_stars cb
+  reset_version: (cb) =>
+    $.ajax {
+      type: 'get'
+      url: @version_json_url
+      dataType: 'json'
+      success: (data) =>
+        @version = parseInt(data.version)
+        cb() if cb? and typeof(cb) is 'function'
+      error: (data) =>
+        log 'error happend'
+    }
+  reset_stars_json: (cb) =>
+    log 'hogefuga'
+    $.ajax {
+      type: 'get'
+      url: @stars_json_url
+      dataType: 'json'
+      success: (stars) =>
+        data = stars
+        cb() if cb? and typeof(cb) is 'function'
+      error: =>
+        log 'error >> ', arguments
+      complete: =>
+        log 'complete >> ', arguments
+      
+    }
   reset_stars: (cb) =>
     @delete_all =>
       insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
@@ -25,9 +59,6 @@ class Stars extends Database
           ra: star.RAh
           dec: star.DEd
         }
-  
-        observe = new Orb.Observation(observer,target)
-        look = observe.horizontal(time)
   
         hr = if star.HR? then star.HR else ''
         bfID = if star.bfID? then star.bfID else ''

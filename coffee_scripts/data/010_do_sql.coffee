@@ -8,26 +8,42 @@ check = ->
 config = new Config()
 config.create_table(check)
 
-stars = new Stars()
-stars.create_table(check)
+stars = new Stars =>
+  log 'UHIHIHIHIHI'
+  stars.create_table(check)
 
 looks = new Looks()
 looks.create_table(check)
 
 next = ->
+  log 'next start'
   config.get (value) =>
-    if !(value?) or parseInt(value) < parseInt(stars_version)
-      stars.reset_stars( =>
-        config.set( =>
-          reset_looks()
-        , 'stars_version', stars_version)
-      )
+    log 'valval', parseInt(value)
+    if value? and isNaN(parseInt(value)) isnt true
+      stars.check_version( =>
+        log 'HHH1'
+        set_stars()
+      , value)
     else
-      reset_looks()
+      log 'e?'
+      stars.reset_stars_json =>
+        log 'HHH2'
+        stars.reset_stars =>
+          log 'HHH2.222'
+          set_stars()
   , 'stars_version'
 
+set_stars = ->
+  log 'HHH3'
+  config.set( =>
+    log 'HHH4'
+    reset_looks()
+  , 'stars_version', stars.version)
+
 reset_looks = ->
+  log 'HHH5'
   looks.reset_looks =>
+    log 'HHH6'
     set_global()
 
 set_global = ->
