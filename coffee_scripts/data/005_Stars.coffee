@@ -19,9 +19,8 @@ class Stars extends Database
   check_version: (cb, current_version) =>
     if parseInt(current_version) < @version
       @reset_stars_json =>
-        reset_stars cb
+        @reset_stars cb
   reset_version: (cb) =>
-    log 'reset_version'
     $.ajax {
       type: 'get'
       url: @version_json_url
