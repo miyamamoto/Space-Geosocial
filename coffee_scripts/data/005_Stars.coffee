@@ -47,7 +47,9 @@ class Stars extends Database
       
     }
   reset_stars: (cb) =>
+    log 'rest_stas'
     @delete_all =>
+      log 'uhiaiaopakp'
       insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
       queries = []
       cnt = 0
@@ -74,5 +76,5 @@ class Stars extends Database
           sql: insert_query
           data: [hr, bfID, name, rah, ded, vmag, sp, pmra, pmde]
         })
-        
+      log 'uipoupoiuiouoiu', queries[0]
       @execute cb, queries
