@@ -115,6 +115,7 @@
     Database.prototype.delete_all = function(cb) {
       var query;
       query = 'DELETE FROM ' + this.table_name + ';';
+      log('!?', query);
       return this.execute(cb, query);
     };
 
