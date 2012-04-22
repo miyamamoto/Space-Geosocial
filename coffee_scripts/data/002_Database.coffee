@@ -1,5 +1,6 @@
 class Database
   constructor: (cb) ->
+    cb() if cb? and typeof(cb) is 'function'
   execute: (cb, query) =>
     error = {}
     html5sql.process(
