@@ -598,10 +598,12 @@
     return config.get(function(value) {
       if (value != null) {
         return stars.check_version(function() {
+          log('HHH1');
           return set_stars();
         }, value);
       } else {
         return stars.reset_stars_json(function() {
+          log('HHH2');
           return set_stars();
         });
       }
@@ -610,14 +612,18 @@
 
   set_stars = function() {
     var _this = this;
+    log('HHH3');
     return config.set(function() {
+      log('HHH4');
       return reset_looks();
     }, 'stars_version', stars.stars_version);
   };
 
   reset_looks = function() {
     var _this = this;
+    log('HHH5');
     return looks.reset_looks(function() {
+      log('HHH6');
       return set_global();
     });
   };
