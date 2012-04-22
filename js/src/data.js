@@ -48,7 +48,7 @@
         _this = this;
       error = {};
       return html5sql.process(query, function(transaction, results) {
-        log('EXECUTE SUCCESS >> ', transaction, results);
+        log('EXECUTE SUCCESS >> ', transaction, results, query);
         if ((cb != null) && typeof cb === 'function') {
           return cb(null, transaction, results);
         }

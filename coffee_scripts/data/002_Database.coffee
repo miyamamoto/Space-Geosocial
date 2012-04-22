@@ -5,7 +5,7 @@ class Database
     error = {}
     html5sql.process(
       query, (transaction, results) =>
-        log 'EXECUTE SUCCESS >> ', transaction, results
+        log 'EXECUTE SUCCESS >> ', transaction, results, query
         if cb? and typeof(cb) is 'function'
           cb(null, transaction, results)
       , (error) ->
