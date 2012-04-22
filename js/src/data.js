@@ -607,7 +607,7 @@
       console.log(arguments);
       this.latitude.val(lat);
       this.longitude.val(long);
-      this.form.attr('action', '/index.php/checkin/reg_checkin/' + id);
+      this.form.attr('action', '/index.php/checkin/reg_checkin/' + star_id);
       return this.form.submit();
     };
 
