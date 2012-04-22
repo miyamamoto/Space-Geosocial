@@ -605,6 +605,7 @@
           return set_stars();
         }, value);
       } else {
+        log('e?');
         return stars.reset_stars_json(function() {
           log('HHH2');
           return set_stars();
