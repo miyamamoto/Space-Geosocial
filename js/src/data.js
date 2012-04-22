@@ -567,6 +567,8 @@
       this.dialog = dialog;
       this.close = __bind(this.close, this);
 
+      this.submit = __bind(this.submit, this);
+
       this.open = __bind(this.open, this);
 
       this.name = $('#star-name', this.dialog);
@@ -593,27 +595,22 @@
       this.name.text(name);
       this.vmag.text(vmag + this.vmag_suffix);
       this.cicnt.text(checkin_count + this.cicnt_suffix);
-      console.log(this.submit);
       this.submit.off('click').on('click', function() {
-        var $form, $lat, $lon, looks;
-        $form = _this.form;
-        $lat = _this.latitude;
-        $lon = _this.longitude;
-        looks = new Looks(function() {
-          var lat, lon, ob;
-          ob = looks.observer;
-          lat = ob.latitude;
-          lon = ob.longitude;
-          $lat.val(lat);
-          $lon.val(lon);
-          console.log($form);
-          $form.attr('action', '/index.php/checkin/reg_checkin/' + id);
-          return $form.submit();
+        navigator.geolocation.watchPosition(function(pos) {
+          return _this.submit(id, pos.coords.latitude, pos.coords.longitude);
+        }, function() {
+          return _this.submit(id, 35.658, 139.741);
         });
         return false;
       });
-      console.log(this.dialog);
       return this.dialog.slideDown();
+    };
+
+    Dialog.prototype.submit = function(star_id, lat, long) {
+      this.latitude.val(lat);
+      this.longitude.val(lon);
+      this.form.attr('action', '/index.php/checkin/reg_checkin/' + id);
+      return this.form.submit();
     };
 
     Dialog.prototype.close = function() {
