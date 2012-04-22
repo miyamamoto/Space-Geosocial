@@ -18,8 +18,8 @@ looks.create_table(check)
 next = ->
   log 'next start'
   config.get (value) =>
-    log 'valval', value
-    if value?
+    log 'valval', parseInt(value)
+    if value? and false
       stars.check_version( =>
         log 'HHH1'
         set_stars()

@@ -598,8 +598,8 @@
     var _this = this;
     log('next start');
     return config.get(function(value) {
-      log('valval', value);
-      if (value != null) {
+      log('valval', parseInt(value));
+      if ((value != null) && false) {
         return stars.check_version(function() {
           log('HHH1');
           return set_stars();
