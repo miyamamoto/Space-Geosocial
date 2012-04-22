@@ -7,6 +7,7 @@ class Looks extends Database
     elevation: 'REAL'
     hour_angle: 'REAL'
   }
+  schema_version: 1
   @observer
   constructor: (cb) ->
     @reset_params cb

@@ -5,6 +5,7 @@ class Config extends Database
     name: 'TEXT'
     value: 'TEXT'
   }
+  schema_version: 1
   get: (cb, name) => 
     query = [
       {

@@ -4,8 +4,7 @@ current_count = 0
 inicheck = ->
   current_count++
   if current_count >= table_count
-    stars.drop_table =>
-      stars.create_table(check)
+    stars.create_table(check)
     config.create_table(check)
     looks.create_table(check)
     
@@ -41,7 +40,19 @@ reset_looks = ->
   looks.reset_looks =>
     set_global()
 
+ready_flag = false
 set_global = ->
-  global = new Global(stars, looks)
+  if ready_flag
+    glob_done()
+  else
+    $ =>
+      glob_done()
+    
+glob_done = ->
+  dialog = new Dialog($('dialog'))
+  global = new Global(stars, looks, dialog)
   window.space_geosocial = global
   $(window).trigger('space_geosocial_ready')
+
+$ =>
+  ready_flag = true
