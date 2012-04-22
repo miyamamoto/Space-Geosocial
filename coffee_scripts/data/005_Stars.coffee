@@ -36,7 +36,8 @@ class Stars extends Database
         @version = parseInt(data.version)
       error: (data) =>
         @version = 0
-      complete: ->
+      complete: =>
+        log 'cb', cb
         cb() if cb? and typeof(cb) is 'function'
     }
   reset_stars_json: (cb) =>
