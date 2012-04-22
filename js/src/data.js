@@ -404,7 +404,7 @@
     Stars.prototype.reset_stars = function(cb) {
       var _this = this;
       return this.delete_all(function() {
-        var bfID, cnt, ded, hr, insert_query, look, name, observe, pmde, pmra, queries, rah, sp, star, target, vmag, _i, _len;
+        var bfID, cnt, ded, hr, insert_query, name, pmde, pmra, queries, rah, sp, star, target, vmag, _i, _len;
         insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
         queries = [];
         cnt = 0;
@@ -417,9 +417,6 @@
             ra: star.RAh,
             dec: star.DEd
           };
-          log(observer);
-          observe = new Orb.Observation(observer, target);
-          look = observe.horizontal(time);
           hr = star.HR != null ? star.HR : '';
           bfID = star.bfID != null ? star.bfID : '';
           name = star.Name != null ? star.Name : '';
