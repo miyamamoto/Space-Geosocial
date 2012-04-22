@@ -40,11 +40,14 @@ next = ->
 set_stars = ->
   log '(^^)', stars.version
   config.set( =>
+    log 'Q1'
     reset_looks()
   , 'stars_version', stars.version)
 
 reset_looks = ->
+  log 'U1'
   looks.reset_looks =>
+    log 'U2'
     set_global()
 
 ready_flag = false
