@@ -23,10 +23,13 @@ class Dialog
     @cicnt.text checkin_count + @cicnt_suffix
     @submit.off('click').on('click', =>
       console.log('clicked')
+      send = @send
       navigator.geolocation.watchPosition (pos) =>
-        @send(id, pos.coords.latitude, pos.coords.longitude)
+        console.log('send', send)
+        send(id, pos.coords.latitude, pos.coords.longitude)
       , =>
-        @send(id, 35.658, 139.741)
+        console.log('send2', send)
+        send(id, 35.658, 139.741)
       return false
     )
     
