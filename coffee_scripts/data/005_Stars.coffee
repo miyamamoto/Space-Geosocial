@@ -37,8 +37,8 @@ class Stars extends Database
       type: 'get'
       url: @stars_json_url
       dataType: 'json'
-      success: =>
-        log 'success >> ', arguments
+      success: (stars) =>
+        data = stars
         cb() if cb? and typeof(cb) is 'function'
       error: =>
         log 'error >> ', arguments

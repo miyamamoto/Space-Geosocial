@@ -408,8 +408,8 @@
         type: 'get',
         url: this.stars_json_url,
         dataType: 'json',
-        success: function() {
-          log('success >> ', arguments);
+        success: function(stars) {
+          data = stars;
           if ((cb != null) && typeof cb === 'function') {
             return cb();
           }
