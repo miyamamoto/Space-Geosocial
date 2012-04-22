@@ -21,6 +21,7 @@ looks = new Looks(inicheck)
 
 next = ->
   config.get (value) =>
+    log 'VERSION >>> ', value
     if value? and isNaN(parseInt(value)) isnt true
       stars.check_version( =>
         set_stars()
