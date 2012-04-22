@@ -385,6 +385,7 @@
 
     Stars.prototype.reset_version = function(cb) {
       var _this = this;
+      log('reset_version');
       return $.ajax({
         type: 'get',
         url: this.version_json_url,
