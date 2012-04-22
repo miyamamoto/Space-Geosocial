@@ -21,7 +21,7 @@ class Dialog
     @name.text name
     @vmag.text vmag + @vmag_suffix
     @cicnt.text checkin_count + @cicnt_suffix
-    
+    console.log(@submit);
     @submit.off('click').on('click', =>
       $form = @form
       $lat = @latitude
@@ -32,8 +32,10 @@ class Dialog
         lon = ob.longitude
         $lat.val lat
         $lon.val lon
+        console.log $form
         $form.attr 'action', '/index.php/checkin/reg_checkin/' + id
         $form.submit()
+        
       return false
     )
     

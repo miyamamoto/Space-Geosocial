@@ -593,6 +593,7 @@
       this.name.text(name);
       this.vmag.text(vmag + this.vmag_suffix);
       this.cicnt.text(checkin_count + this.cicnt_suffix);
+      console.log(this.submit);
       this.submit.off('click').on('click', function() {
         var $form, $lat, $lon, looks;
         $form = _this.form;
@@ -605,6 +606,7 @@
           lon = ob.longitude;
           $lat.val(lat);
           $lon.val(lon);
+          console.log($form);
           $form.attr('action', '/index.php/checkin/reg_checkin/' + id);
           return $form.submit();
         });
