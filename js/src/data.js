@@ -663,13 +663,16 @@
     var _this = this;
     log('(^^)', stars.version);
     return config.set(function() {
+      log('Q1');
       return reset_looks();
     }, 'stars_version', stars.version);
   };
 
   reset_looks = function() {
     var _this = this;
+    log('U1');
     return looks.reset_looks(function() {
+      log('U2');
       return set_global();
     });
   };
