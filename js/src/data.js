@@ -437,7 +437,7 @@
         insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
         queries = [];
         cnt = 0;
-        log(data[0], data[1]);
+        log(_this.data[0], _this.data[1]);
         _ref = _this.data;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           star = _ref[_i];
