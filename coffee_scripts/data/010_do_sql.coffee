@@ -18,13 +18,17 @@ next = ->
   config.get (value) =>
     if value?
       stars.check_version( =>
-        config.set( =>
-          reset_looks()
-        , 'stars_version', stars.stars_version)
+        set_stars()
       , value)
     else
-      reset_looks()
+      stars.reset_stars_json =>
+        set_stars()
   , 'stars_version'
+
+set_stars = ->
+  config.set( =>
+    reset_looks()
+  , 'stars_version', stars.stars_version)
 
 reset_looks = ->
   looks.reset_looks =>
