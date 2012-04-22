@@ -59,7 +59,7 @@ set_global = ->
       glob_done()
     
 glob_done = ->
-  dialog = new Dialog($('dialog'))
+  dialog = new Dialog($('#dialog'))
   global = new Global(stars, looks, dialog)
   window.space_geosocial = global
   $(window).trigger('space_geosocial_ready')
