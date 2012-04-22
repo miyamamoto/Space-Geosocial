@@ -423,7 +423,7 @@
       var _this = this;
       return this.delete_all(function() {
         var bfID, cnt, ded, hr, insert_query, name, pmde, pmra, queries, rah, sp, star, starid, vmag, _i, _len, _ref;
-        insert_query = 'INSERT INTO stars (starid, hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
+        insert_query = 'INSERT INTO stars (starid, hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
         queries = [];
         cnt = 0;
         _ref = _this.data;

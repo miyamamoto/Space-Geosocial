@@ -47,7 +47,7 @@ class Stars extends Database
     }
   reset_stars: (cb) =>
     @delete_all =>
-      insert_query = 'INSERT INTO stars (starid, hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
+      insert_query = 'INSERT INTO stars (starid, hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
       queries = []
       cnt = 0
       
