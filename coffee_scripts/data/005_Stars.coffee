@@ -1,4 +1,5 @@
 class Stars extends Database
+  stars_json_url: 'http://49.212.141.168/index.php'
   table_name: 'stars'
   schema: {
     id: 'INTEGER PRIMARY KEY AUTOINCREMENT'
@@ -12,6 +13,29 @@ class Stars extends Database
     pmra: 'REAL'
     pmde: 'REAL'
   }
+  constructor: (cb) ->
+    #あとでAjaxでバージョン情報を取得する処理を追加
+    @version = 2
+  check_version: (cb, current_version) =>
+    log parseInt(current_version) , @version
+    if parseInt(current_version) < @version
+      @reset_stars_json =>
+        reset_stars cb
+  reset_stars_json: (cb) =>
+    log 'hogefuga'
+    $.ajax {
+      type: 'get'
+      url: @stars_json_url
+      dataType: 'json'
+      success: =>
+        log 'success >> ', arguments
+        cb() if cb? and typeof(cb) is 'function'
+      error: =>
+        log 'error >> ', arguments
+      complete: =>
+        log 'complete >> ', arguments
+      
+    }
   reset_stars: (cb) =>
     @delete_all =>
       insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
@@ -25,7 +49,7 @@ class Stars extends Database
           ra: star.RAh
           dec: star.DEd
         }
-  
+        log observer
         observe = new Orb.Observation(observer,target)
         look = observe.horizontal(time)
   

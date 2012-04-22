@@ -16,12 +16,13 @@ looks.create_table(check)
 
 next = ->
   config.get (value) =>
-    if !(value?) or parseInt(value) < parseInt(stars_version)
-      stars.reset_stars( =>
+    log 'VALVAL', value
+    if value?
+      stars.check_version( =>
         config.set( =>
           reset_looks()
-        , 'stars_version', stars_version)
-      )
+        , 'stars_version', stars.stars_version)
+      , value)
     else
       reset_looks()
   , 'stars_version'
