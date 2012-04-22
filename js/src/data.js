@@ -432,7 +432,7 @@
       var _this = this;
       log('rest_stas');
       return this.delete_all(function() {
-        var bfID, cnt, ded, hr, insert_query, name, pmde, pmra, queries, rah, sp, star, target, vmag, _i, _len, _ref;
+        var bfID, cnt, ded, hr, insert_query, name, pmde, pmra, queries, rah, sp, star, vmag, _i, _len, _ref;
         log('uhiaiaopakp');
         insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
         queries = [];
@@ -441,23 +441,18 @@
         _ref = _this.data;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           star = _ref[_i];
-          if (!((star != null ? star.RAh : void 0) != null) || !(star.DEd != null)) {
-            log(star.RAh, star.DEd);
+          if (!((star != null ? star.rah : void 0) != null) || !(star.ded != null)) {
             continue;
           }
-          target = {
-            ra: star.RAh,
-            dec: star.DEd
-          };
-          hr = star.HR != null ? star.HR : '';
-          bfID = star.bfID != null ? star.bfID : '';
-          name = star.Name != null ? star.Name : '';
-          rah = star.RAh != null ? star.RAh : 0;
-          ded = star.DEd != null ? star.DEd : 0;
-          vmag = star.Vmag != null ? star.Vmag : 0;
-          sp = star.Sp != null ? star.Sp : '';
-          pmra = star.pmRA != null ? star.pmRA : 0;
-          pmde = star.pmDE != null ? star.pmDE : 0;
+          hr = star.hr != null ? star.hr : '';
+          bfID = star.bfid != null ? star.bfid : '';
+          name = star.name != null ? star.name : '';
+          rah = star.rah != null ? star.rah : 0;
+          ded = star.ded != null ? star.ded : 0;
+          vmag = star.vmag != null ? star.vmag : 0;
+          sp = star.sp != null ? star.sp : '';
+          pmra = star.pmra != null ? star.pmra : 0;
+          pmde = star.pmde != null ? star.pmde : 0;
           queries.push({
             sql: insert_query,
             data: [hr, bfID, name, rah, ded, vmag, sp, pmra, pmde]
