@@ -586,6 +586,7 @@
   config.create_table(check);
 
   stars = new Stars(function() {
+    log('UHIHIHIHIHI');
     return stars.create_table(check);
   });
 
@@ -595,7 +596,9 @@
 
   next = function() {
     var _this = this;
+    log('next start');
     return config.get(function(value) {
+      log('valval', value);
       if (value != null) {
         return stars.check_version(function() {
           log('HHH1');
