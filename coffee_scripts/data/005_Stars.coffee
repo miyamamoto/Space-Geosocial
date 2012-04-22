@@ -15,6 +15,7 @@ class Stars extends Database
     pmra: 'REAL'
     pmde: 'REAL'
   }
+  schema_version: 1
   constructor: (cb) ->
     @data = data
     @reset_version cb
