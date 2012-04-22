@@ -34,6 +34,7 @@ class Looks extends Database
     stars = new Stars()
     stars.get_all (error, tx, results) =>
       if error is null and results?.rows?.length?
+        log 'starlen', results.rows.length
         stars = []
         cnt = 0
         while cnt < results.rows.length
@@ -57,7 +58,10 @@ class Looks extends Database
               data: [star.id, look.azimuth, look.elevation, look.hour_angle]
             }
           
-          @execute cb, queries
+          if queries.length > 0
+            @execute cb, queries
+          else
+            cb() if cb? and typeof(cb) is 'function'
   get_near_stars: (cb, alpha, gamma, margin = 30) =>
     #alpha = azimuth = 方位角
     #gamma = elevation = 高さ角度

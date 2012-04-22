@@ -265,6 +265,7 @@
       return stars.get_all(function(error, tx, results) {
         var cnt, _ref;
         if (error === null && ((results != null ? (_ref = results.rows) != null ? _ref.length : void 0 : void 0) != null)) {
+          log('starlen', results.rows.length);
           stars = [];
           cnt = 0;
           while (cnt < results.rows.length) {
@@ -287,7 +288,13 @@
                 data: [star.id, look.azimuth, look.elevation, look.hour_angle]
               });
             }
-            return _this.execute(cb, queries);
+            if (queries.length > 0) {
+              return _this.execute(cb, queries);
+            } else {
+              if ((cb != null) && typeof cb === 'function') {
+                return cb();
+              }
+            }
           });
         }
       });
