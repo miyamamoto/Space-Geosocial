@@ -594,16 +594,19 @@
       this.vmag.text(vmag + this.vmag_suffix);
       this.cicnt.text(checkin_count + this.cicnt_suffix);
       this.submit.off('click').on('click', function() {
-        var looks;
+        var $form, $lat, $lon, looks;
+        $form = _this.form;
+        $lat = _this.latitude;
+        $lon = _this.longitude;
         looks = new Looks(function() {
           var lat, lon, ob;
           ob = looks.observer;
           lat = ob.latitude;
           lon = ob.longitude;
-          _this.latitude.val(lat);
-          _this.longitude.val(lon);
-          _this.form.attr('action', '/index.php/checkin/reg_checkin/' + id);
-          return _this.form.submit();
+          $lat.val(lat);
+          $lon.val(lon);
+          $form.attr('action', '/index.php/checkin/reg_checkin/' + id);
+          return $form.submit();
         });
         return false;
       });

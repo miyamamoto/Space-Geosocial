@@ -23,14 +23,17 @@ class Dialog
     @cicnt.text checkin_count + @cicnt_suffix
     
     @submit.off('click').on('click', =>
+      $form = @form
+      $lat = @latitude
+      $lon = @longitude
       looks = new Looks =>
         ob = looks.observer
         lat = ob.latitude
         lon = ob.longitude
-        @latitude.val lat
-        @longitude.val lon
-        @form.attr 'action', '/index.php/checkin/reg_checkin/' + id
-        @form.submit()
+        $lat.val lat
+        $lon.val lon
+        $form.attr 'action', '/index.php/checkin/reg_checkin/' + id
+        $form.submit()
       return false
     )
     
