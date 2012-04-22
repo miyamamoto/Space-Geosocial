@@ -34,7 +34,7 @@ class Dialog
   send: (star_id, lat, long)=>
     console.log arguments
     @latitude.val lat
-    @longitude.val lon
+    @longitude.val long
     @form.attr 'action', '/index.php/checkin/reg_checkin/' + id
     @form.submit()
   close: =>
