@@ -385,6 +385,7 @@
 
     Stars.prototype.check_version = function(cb, current_version) {
       var _this = this;
+      log('VERSION *** ', parseInt(current_version), this.version, parseInt(current_version) < this.version);
       if (parseInt(current_version) < this.version) {
         return this.reset_stars_json(function() {
           return _this.reset_stars(cb);
