@@ -620,7 +620,7 @@
     return config.set(function() {
       log('HHH4');
       return reset_looks();
-    }, 'stars_version', stars.stars_version);
+    }, 'stars_version', stars.version);
   };
 
   reset_looks = function() {

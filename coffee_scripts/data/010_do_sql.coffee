@@ -36,7 +36,7 @@ set_stars = ->
   config.set( =>
     log 'HHH4'
     reset_looks()
-  , 'stars_version', stars.stars_version)
+  , 'stars_version', stars.version)
 
 reset_looks = ->
   log 'HHH5'
