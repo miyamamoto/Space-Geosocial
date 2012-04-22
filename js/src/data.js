@@ -625,6 +625,7 @@
   next = function() {
     var _this = this;
     return config.get(function(value) {
+      log('VERSION >>> ', value);
       if ((value != null) && isNaN(parseInt(value)) !== true) {
         return stars.check_version(function() {
           return set_stars();
