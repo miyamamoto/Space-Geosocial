@@ -15,6 +15,7 @@ class Stars extends Database
     pmde: 'REAL'
   }
   constructor: (cb) ->
+    log data
     @data = data
     @reset_version cb
   check_version: (cb, current_version) =>
@@ -56,7 +57,7 @@ class Stars extends Database
       queries = []
       cnt = 0
       
-      log data
+      log data[0], data[1]
       for star in @data
         if !(star?.RAh?) or !(star.DEd?)
           continue

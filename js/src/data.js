@@ -373,6 +373,7 @@
       this.reset_version = __bind(this.reset_version, this);
 
       this.check_version = __bind(this.check_version, this);
+      log(data);
       this.data = data;
       this.reset_version(cb);
     }
@@ -436,7 +437,7 @@
         insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
         queries = [];
         cnt = 0;
-        log(data);
+        log(data[0], data[1]);
         _ref = _this.data;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           star = _ref[_i];
