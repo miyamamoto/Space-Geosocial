@@ -258,7 +258,6 @@
       stars = new Stars();
       return stars.get_all(function(error, tx, results) {
         var cnt, _ref;
-        log('>>>>>', arguments);
         if (error === null && ((results != null ? (_ref = results.rows) != null ? _ref.length : void 0 : void 0) != null)) {
           stars = [];
           cnt = 0;
@@ -353,7 +352,7 @@
 
     Stars.prototype.schema = {
       id: 'INTEGER PRIMARY KEY AUTOINCREMENT',
-      starid: 'INTEGER',
+      starid: 'TEXT',
       hr: 'TEXT',
       bfid: 'TEXT',
       name: 'TEXT',
@@ -589,10 +588,13 @@
   current_count = 0;
 
   inicheck = function() {
+    var _this = this;
     current_count++;
     if (current_count >= table_count) {
+      stars.drop_table(function() {
+        return stars.create_table(check);
+      });
       config.create_table(check);
-      stars.create_table(check);
       return looks.create_table(check);
     }
   };

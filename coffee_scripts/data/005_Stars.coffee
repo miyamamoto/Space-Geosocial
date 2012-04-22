@@ -4,7 +4,7 @@ class Stars extends Database
   table_name: 'stars'
   schema: {
     id: 'INTEGER PRIMARY KEY AUTOINCREMENT'
-    starid: 'INTEGER'
+    starid: 'TEXT'
     hr: 'TEXT'
     bfid: 'TEXT'
     name: 'TEXT'
