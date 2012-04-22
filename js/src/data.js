@@ -410,7 +410,11 @@
         error: function(data) {
           return _this.version = 0;
         },
-        complete: (cb != null) && typeof cb === 'function' ? cb() : void 0
+        complete: function() {
+          if ((cb != null) && typeof cb === 'function') {
+            return cb();
+          }
+        }
       });
     };
 
