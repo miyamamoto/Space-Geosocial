@@ -15,6 +15,7 @@ class Stars extends Database
     pmde: 'REAL'
   }
   constructor: (cb) ->
+    @data = data
     @reset_version cb
   check_version: (cb, current_version) =>
     if parseInt(current_version) < @version
@@ -38,7 +39,7 @@ class Stars extends Database
       url: @stars_json_url
       dataType: 'json'
       success: (stars) =>
-        data = stars
+        @data = stars
         log stars
         cb() if cb? and typeof(cb) is 'function'
       error: =>
@@ -56,7 +57,7 @@ class Stars extends Database
       cnt = 0
       
       log data
-      for star in data
+      for star in @data
         if !(star?.RAh?) or !(star.DEd?)
           continue
         

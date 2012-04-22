@@ -373,6 +373,7 @@
       this.reset_version = __bind(this.reset_version, this);
 
       this.check_version = __bind(this.check_version, this);
+      this.data = data;
       this.reset_version(cb);
     }
 
@@ -411,7 +412,7 @@
         url: this.stars_json_url,
         dataType: 'json',
         success: function(stars) {
-          data = stars;
+          _this.data = stars;
           log(stars);
           if ((cb != null) && typeof cb === 'function') {
             return cb();
@@ -430,14 +431,15 @@
       var _this = this;
       log('rest_stas');
       return this.delete_all(function() {
-        var bfID, cnt, ded, hr, insert_query, name, pmde, pmra, queries, rah, sp, star, target, vmag, _i, _len;
+        var bfID, cnt, ded, hr, insert_query, name, pmde, pmra, queries, rah, sp, star, target, vmag, _i, _len, _ref;
         log('uhiaiaopakp');
         insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
         queries = [];
         cnt = 0;
         log(data);
-        for (_i = 0, _len = data.length; _i < _len; _i++) {
-          star = data[_i];
+        _ref = _this.data;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          star = _ref[_i];
           if (!((star != null ? star.RAh : void 0) != null) || !(star.DEd != null)) {
             continue;
           }
