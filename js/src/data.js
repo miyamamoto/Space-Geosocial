@@ -404,6 +404,7 @@
         url: this.version_json_url,
         dataType: 'json',
         success: function(data) {
+          log('DATA>VERSION', data);
           return _this.version = parseInt(data.version);
         },
         error: function(data) {
