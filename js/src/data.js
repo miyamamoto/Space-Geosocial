@@ -482,9 +482,6 @@
 
       this.reset_stars = __bind(this.reset_stars, this);
 
-      ({
-        dialog: Dialog
-      });
     }
 
     Global.prototype.reset_stars = function(cb, stars) {

@@ -2,7 +2,6 @@ class Global
   @looks
   @stars
   constructor: (@stars, @looks, @dialog) ->
-    dialog: Dialog
   reset_stars: (cb, stars) =>
     data = stars
     @stars.reset_stars =>
