@@ -8,15 +8,14 @@ check = ->
 config = new Config()
 config.create_table(check)
 
-stars = new Stars()
-stars.create_table(check)
+stars = new Stars =>
+  stars.create_table(check)
 
 looks = new Looks()
 looks.create_table(check)
 
 next = ->
   config.get (value) =>
-    log 'VALVAL', value
     if value?
       stars.check_version( =>
         config.set( =>
