@@ -1,18 +1,23 @@
 table_count = 3
 current_count = 0
+
+inicheck = ->
+  current_count++
+  if current_count >= table_count
+    config.create_table(check)
+    stars.create_table(check)
+    looks.create_table(check)
+    
 check = ->
   current_count++
   if current_count >= table_count
     next()
 
-config = new Config()
-config.create_table(check)
+config = new Config(inicheck)
 
-stars = new Stars =>
-  stars.create_table(check)
+stars = new Stars(inicheck)
 
-looks = new Looks()
-looks.create_table(check)
+looks = new Looks(inicheck)
 
 next = ->
   config.get (value) =>
