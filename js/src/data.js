@@ -426,8 +426,10 @@
 
     Stars.prototype.reset_stars = function(cb) {
       var _this = this;
+      log('rest_stas');
       return this.delete_all(function() {
         var bfID, cnt, ded, hr, insert_query, name, pmde, pmra, queries, rah, sp, star, target, vmag, _i, _len;
+        log('uhiaiaopakp');
         insert_query = 'INSERT INTO stars (hr, bfid, name, rah, ded, vmag, sp, pmra, pmde) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
         queries = [];
         cnt = 0;
@@ -454,6 +456,7 @@
             data: [hr, bfID, name, rah, ded, vmag, sp, pmra, pmde]
           });
         }
+        log('uipoupoiuiouoiu', queries[0]);
         return _this.execute(cb, queries);
       });
     };
