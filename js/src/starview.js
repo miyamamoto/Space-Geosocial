@@ -1,6 +1,5 @@
 var ready_db_flag = 0;
 var ready_scroll_flag = 0;
-var frame_count = 0;
 var dialog;
 var screen_azimuth = 0; //方位
 var screen_elevation = 0; //高角度
@@ -8,11 +7,21 @@ var screen_elevation = 0; //高角度
 //var SCREEN_VERTICAL_VIEW_ANGLE = 4.764;
 var SCREEN_HORIZONTAL_VIEW_ANGLE = 30;
 var SCREEN_VERTICAL_VIEW_ANGLE = 20;
-var STAR_NUM = 100;
+var STAR_NUM = 50;
+var SCREEN_WIDTH;
+var SCREEN_HEIGHT;
 var low_pass_filter = 0.5;
 var low_pass_azumith = [0, 0, 0];
-var NEWS = ["N", "E", "W", "S"];
-var NEWS_AZMITH = [0, 90, 270, 180];
+var NEWS = {
+    "N_LABEL" : "N",
+    "S_LABEL" : "S",
+    "E_LABEL" : "E",
+    "W_LABEL" : "W",
+    "N_AZMITH" : 0,
+    "S_AZMITH" : 180,
+    "E_AZMITH" : 90,
+    "W_AZMITH" : 270,
+};
 
 (function(window) {
     function checkready(){
@@ -48,23 +57,15 @@ var NEWS_AZMITH = [0, 90, 270, 180];
     }
 
     var main = function(spec, my) {
-        var SCREEN_WIDTH    = innerWidth;
-        var SCREEN_HEIGHT   = innerHeight;
-        console.log("SCREEN");
-        console.log(SCREEN_WIDTH);
-        console.log(SCREEN_HEIGHT);
-
+        SCREEN_WIDTH    = innerWidth;
+        SCREEN_HEIGHT   = innerHeight;
         var canvas;
         var stage;
         var starfield;
-        var news = [];
         var star = [];
-        var star_data = []; //= STARS_DATA;
-        var star_name = [];
         var sky;
-        var display_azimuth;
-        var display_elevation;
-
+        var display = {};
+        var date = new Date();
 
         //　観測者は東京に居るとする（あとで取得する）
         var observer = {
@@ -83,8 +84,8 @@ var NEWS_AZMITH = [0, 90, 270, 180];
 
             console.log("bsc");
             console.log(bsc[0]);
-            var date = new Date();
             var time = new Orb.Time(date);
+            console.log("star.data");
             for(var i = 0; i < STAR_NUM; i++){
                 var target = {
                   "ra": bsc[i].RAh,
@@ -92,10 +93,9 @@ var NEWS_AZMITH = [0, 90, 270, 180];
                 };
                 var observe = new Orb.Observation(observer,target);
                 var look = observe.horizontal(time);
-                star_data.push(look);
+                star.push({"data" : look});
+                console.log(star[i].data);
             }
-            console.log("star_data");
-            console.log(star_data);
 
             // create a new stage and point it at our canvas:
             canvas = $("#stageCanvas")[0];
@@ -113,51 +113,71 @@ var NEWS_AZMITH = [0, 90, 270, 180];
 
             starfield.cache(0,0,SCREEN_WIDTH,SCREEN_HEIGHT);
 
-            for(var i = 0; i < 4; i++){
-                console.log("NEWS[i]");
-                console.log(NEWS[i]);
-                news[i] = new Text(NEWS[i], "20px Arial", "#FFF");
-                var pos_x = ( (SCREEN_WIDTH / 2) * (NEWS_AZMITH[i] - screen_azimuth )/ SCREEN_HORIZONTAL_VIEW_ANGLE + SCREEN_WIDTH / 2);
-                news[i].x = pos_x;
-                news[i].y = SCREEN_HEIGHT -40;
-                stage.addChild(news[i]);
-            }
-
             for(var i = 0; i < STAR_NUM; i++){
-                var pos_x = ( (SCREEN_WIDTH / 2) * (star_data[i].azimuth - screen_azimuth )/ SCREEN_HORIZONTAL_VIEW_ANGLE + SCREEN_WIDTH / 2);
-                var pos_y = ( SCREEN_HEIGHT - ((SCREEN_HEIGHT/ 2) * ( star_data[i].elevation - screen_elevation )/ SCREEN_VERTICAL_VIEW_ANGLE + SCREEN_HEIGHT / 2));
+                var pos_x;
+                if ( star[i].data.azimuth >= screen_azimuth - SCREEN_HORIZONTAL_VIEW_ANGLE + 360){
+                    pos_x = star[i].data.azimuth - 360 - screen_azimuth;
+                } else if (star[i].data.azimuth <= screen_azimuth + SCREEN_HORIZONTAL_VIEW_ANGLE -360){
+                    pos_x = star[i].data.azimuth + 360 - screen_azimuth;
+                } else {
+                    pos_x = star[i].data.azimuth - screen_azimuth;
+                }
+                pos_x = calc_screen_x(pos_x);
+                var pos_y = calc_screen_y( star[i].data.elevation - screen_elevation );
                 var size = ((7-bsc[i].Vmag )*1.5)+1;
-                console.log("" + star_data[i].azimuth);
-                console.log("" + star_data[i].elevation);
-                console.log("" + pos_x);
-                console.log("" + pos_y);
-                console.log("" + size);
 
                 //Shape
-                star[i] = new Shape();
-                star[i].graphics.beginFill("#FFF").drawCircle(pos_x, pos_y, size);
-                stage.addChild(star[i]);
-
-                star_name[i] = new Text(bsc[i].Name ? bsc[i].Name : bsc[i].bfID, "8px Arial", "#AAA");
-                star_name[i].textBaseline = "top";
-                star_name[i].x = pos_x;
-                star_name[i].y = pos_y;
-                stage.addChild(star_name[i]);
+                //star[i]["shape"] = new Shape();
+                //star[i].shape.graphics.beginFill("#FFF").drawCircle(pos_x, pos_y, size);
+                //star[i].shape.x = pos_x;
+                //star[i].shape.y = pos_y;
+                star[i]["name"] = new Text(bsc[i].Name ? "★" + bsc[i].Name : "・" + bsc[i].bfID, "14px Arial", "#EEE");
+                star[i].name.textBaseline = "top";
+                star[i].name.x = pos_x;
+                star[i].name.y = pos_y;
+                //stage.addChild(star[i].shape);
+                stage.addChild(star[i].name);
             }
 
             //display azimuth and elevation
-            display_azimuth = new Text("azimuth", "8px Arial", "#AAA");
-            display_elevation = new Text("elevation", "8px Arial", "#AAA");
-            //star_name.textBaseline = "top";
-            display_azimuth.x = 20;
-            display_azimuth.y = SCREEN_HEIGHT - 20;
-            display_elevation.x = 200;
-            display_elevation.y = SCREEN_HEIGHT -20;
-            stage.addChild(display_azimuth);
-            stage.addChild(display_elevation);
+            display = {
+                "azimuth" : new Text("azimuth", "12px Arial", "#AAA"),
+                "elevation" : new Text("elevation", "12px Arial", "#AAA"),
+                "time" : new Text("time" + date.getHours() + " : " + date.getMinutes(), "12px Arial", "#AAA"),
+                "north" : new Text("N", "20px Arial", "#F00"),
+                "south" : new Text("S", "20px Arial", "#00F"),
+                "east" : new Text("E", "20px Arial", "#FFF"),
+                "west" : new Text("W", "20px Arial", "#FFF")
+            };
+            display.azimuth.x = 20;
+            display.azimuth.y = SCREEN_HEIGHT - 20;
+
+            display.elevation.x = 170;
+            display.elevation.y = SCREEN_HEIGHT -20;
+
+            display.time.x = 320;
+            display.time.y = SCREEN_HEIGHT -20;
+
+            display.north.x = calc_screen_x(NEWS.N_AZMITH - screen_azimuth);
+            display.south.x = calc_screen_x(NEWS.S_AZMITH - screen_azimuth);
+            display.east.x = calc_screen_x(NEWS.E_AZMITH - screen_azimuth);
+            display.west.x = calc_screen_x(NEWS.W_AZMITH - screen_azimuth);
+
+            display.north.y = SCREEN_HEIGHT - 40;
+            display.south.y = SCREEN_HEIGHT - 40;
+            display.east.y = SCREEN_HEIGHT - 40;
+            display.west.y = SCREEN_HEIGHT - 40;
+
+            stage.addChild(display.azimuth);
+            stage.addChild(display.elevation);
+            stage.addChild(display.time);
+            stage.addChild(display.north);
+            stage.addChild(display.south);
+            stage.addChild(display.east);
+            stage.addChild(display.west);
 
             Ticker.addListener(that);
-            Ticker.setFPS(30);
+            Ticker.setFPS(10);
         }
 
         that.stop = function(){
@@ -178,42 +198,64 @@ var NEWS_AZMITH = [0, 90, 270, 180];
 
             // move the moon across the sky:
             for(var i=0;i<STAR_NUM;i++){
-                var pos_x = ( (SCREEN_WIDTH / 2) * (star_data[i].azimuth - screen_azimuth )/ SCREEN_HORIZONTAL_VIEW_ANGLE + SCREEN_WIDTH / 2);
-                var pos_y = ( SCREEN_HEIGHT - ((SCREEN_HEIGHT/ 2) * ( star_data[i].elevation - screen_elevation )/ SCREEN_VERTICAL_VIEW_ANGLE + SCREEN_HEIGHT / 2));
-                star_name[i].x = pos_x;
-                star_name[i].y = pos_y;
-                star[i].x = pos_x ;
-                star[i].y = pos_y;
-                //console.log("" + star_data[i].azimuth);
-                //console.log("" + star_data[i].elevation);
-                //console.log("" + pos_x);
-                //console.log("" + pos_y);
+                //if(1){continue;}
+                var pos_x;
+                if ( star[i].data.azimuth >= screen_azimuth - SCREEN_HORIZONTAL_VIEW_ANGLE + 360){
+                    pos_x = star[i].data.azimuth - 360 - screen_azimuth;
+                } else if (star[i].data.azimuth <= screen_azimuth + SCREEN_HORIZONTAL_VIEW_ANGLE -360){
+                    pos_x = star[i].data.azimuth + 360 - screen_azimuth;
+                } else {
+                    pos_x = star[i].data.azimuth - screen_azimuth;
+                }
+                var pos_y = star[i].data.elevation - screen_elevation;
+                //if ( pos_x > 1 || pos_x < -1 || pos_y > 1 || pos_y < -1) {continue;}
+                pos_x = calc_screen_x(pos_x);
+                pos_y = calc_screen_y(pos_y);
+                //star[i].shape.x = pos_x;
+                //star[i].shape.y = pos_y;
+                star[i].name.x = pos_x;
+                star[i].name.y = pos_y;
+                //console.log("sirius_shape" + star[i].shape.x + " : " + star[i].shape.y);
+                //console.log("sirius_name" + star[i].name.x + " : " + star[i].name.y);
             }
             //NEWS
-            for(var i = 0; i < 4; i++){
-                var pos_x = ( (SCREEN_WIDTH / 2) * (NEWS_AZMITH[i] - screen_azimuth )/ SCREEN_HORIZONTAL_VIEW_ANGLE + SCREEN_WIDTH / 2);
-                news[i].x = pos_x;
+            if ( NEWS.N_AZMITH >= screen_azimuth - SCREEN_HORIZONTAL_VIEW_ANGLE + 360){
+                display.north.x = calc_screen_x(NEWS.N_AZMITH - 360 - screen_azimuth);
+            } else if (NEWS.N_AZMITH <= screen_azimuth + SCREEN_HORIZONTAL_VIEW_ANGLE -360){
+                display.north.x = calc_screen_x(NEWS.N_AZMITH + 360 - screen_azimuth);
+            } else {
+                display.north.x = calc_screen_x(NEWS.N_AZMITH - screen_azimuth);
             }
-            //display azimuth and elevation
-            display_azimuth.text =  "azimuth : " + screen_azimuth;
-            display_elevation.text = "elevation : " + screen_elevation;
+            display.south.x = calc_screen_x(NEWS.S_AZMITH - screen_azimuth);
+            display.east.x = calc_screen_x(NEWS.E_AZMITH - screen_azimuth);
+            display.west.x = calc_screen_x(NEWS.W_AZMITH - screen_azimuth);
+
+            display.azimuth.text =  "azimuth : " + Math.round(screen_azimuth);
+            display.elevation.text = "elevation : " + Math.round(screen_elevation);
+            display.time.text = "time" + date.getHours() + " : " + date.getMinutes();
+
             //display_azimuth.x = pos_x;
             //display_elevation.x = pos_x + 200;
 
             // draw the updates to stage:
             stage.update();
-            frame_count++;
+            //console.log("sirius_shape" + star[0].shape.x + " : " + star[0].shape.y);
+            //console.log("sirius_name"  + star[0].name.x  + " : " + star[0].name.y);
         }
         return that;
+    }
+
+    function calc_screen_x(target_azmith){
+        return  ( (SCREEN_WIDTH / 2) * target_azmith / SCREEN_HORIZONTAL_VIEW_ANGLE + SCREEN_WIDTH / 2);
+    }
+
+    function calc_screen_y(target_elevation){
+        return  SCREEN_HEIGHT - ( (SCREEN_HEIGHT / 2) * target_elevation / SCREEN_VERTICAL_VIEW_ANGLE + SCREEN_HEIGHT / 2);
     }
 
 })(window);
 
 window.ondeviceorientation = function(event) {
-    //var a = 360 - Math.round(event.alpha*1/1);
-    //a = (a < 0 ) ? ( (a > -90) ? a + 360 : a) : a;
-    //var b = Math.round(event.beta*1/1);
-    //var g = -Math.round(event.gamma*1/1) - 90;
     var a = 360 - (event.alpha*1/1);
     //low_pass_azumith.shift();
     //low_pass_azumith.push(a);
@@ -226,7 +268,7 @@ window.ondeviceorientation = function(event) {
     //}
     //a = Math.atan2(y1, x1) * 180 / Math.PI;
     //a = a * low_pass_filter + screen_azimuth * (1.0 - low_pass_filter);
-    a = (a < 0 ) ? ( (a > -90) ? a + 360 : a) : a;
+    //a = (a < 0 ) ? ( (a > -90) ? a + 360 : a) : a;
     var b =(event.beta*1/1);
     var g = (-(event.gamma*1/1) - 90 );
     g = g * low_pass_filter + screen_elevation * (1.0 - low_pass_filter);
