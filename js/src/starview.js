@@ -96,6 +96,26 @@ var NEWS = {
             // create a new stage and point it at our canvas:
             canvas = $("#stageCanvas")[0];
             stage = new Stage(canvas);
+            stage.enableMouseOver(10);
+            //stage.onMouseDown = handleMouseDown;
+            //stage.onMouseUp = handleMouseUp;
+            Touch.enable(stage);
+
+            (function(target) {
+                stage.onPress = function(evt) {
+                    var offsetX = screen_azimuth;
+                    var offsetY = screen_elevation;
+                    evt.onMouseMove = function(ev) {
+                        console.log("move!");
+                        screen_azimuth = (-2 * SCREEN_HORIZONTAL_VIEW_ANGLE * (ev.stageX - evt.stageX) / canvas.width + offsetX) % 360;
+                        //screen_azimuth = screen_azimuth < 0 ? 360 - screen_azimuth : screen_azimuth % 360 ;
+                        screen_elevation = 2 * SCREEN_VERTICAL_VIEW_ANGLE * (ev.stageY - evt.stageY) / canvas.height + offsetY;
+                        screen_elevation = (screen_elevation > 90) ? 90 : ( screen_elevation < -90 ? -90 : screen_elevation );
+                        //target.x = ev.stageX+offsetX;
+                        //target.y = ev.stageY+offsetY;
+                    }
+                }
+            })(stage);
 
             // draw the sky:
             sky = new Shape();
@@ -187,7 +207,7 @@ var NEWS = {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             sky.graphics.drawRect(0, 0, canvas.width, canvas.height);
-            starfield.cache(0,0,canvas.width,canvas.height);
+            //starfield.cache(0,0,canvas.width,canvas.height);
             // draw a vector star at a random location:
             starfield.graphics.beginFill(Graphics.getRGB(0xFFFFFF,Math.random())).drawPolyStar(Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*4+1, 5, 0.93, Math.random()*360);
 
@@ -260,6 +280,28 @@ var NEWS = {
 
     function calc_screen_y(target_elevation){
         return  canvas.height - ( (canvas.height / 2) * target_elevation / SCREEN_VERTICAL_VIEW_ANGLE + canvas.height / 2);
+    }
+
+    function handleMouseDown() {
+        isMouseDown = true;
+        stage.removeChild(txt);
+
+        var s = new Shape();
+        oldX = stage.mouseX;
+        oldY = stage.mouseY;
+        oldMidX = stage.mouseX;
+        oldMidY = stage.mouseY;
+        var g = s.graphics;
+        var thickness = Math.random() * 30 + 10 | 0;
+        g.setStrokeStyle(thickness + 1, 'round', 'round');
+        var color = Graphics.getRGB(Math.random()*255 | 0 ,Math.random()*255 | 0, Math.random()*255 | 0);
+        g.beginStroke(color);
+        stage.addChild(s);
+        currentShape = s;
+    }
+
+    function handleMouseUp() {
+        isMouseDown = false;
     }
 
 })(window);
