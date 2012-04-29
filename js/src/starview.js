@@ -1,5 +1,7 @@
 var ready_db_flag = 0;
 var ready_scroll_flag = 0;
+var compass_flag = 1;
+var SHAKE_G = 10;
 var dialog;
 var canvas
 var screen_azimuth = 0; //方位
@@ -38,8 +40,8 @@ var NEWS = {
         if(supports_canvas()) {
             canvas = $("#stageCanvas")[0];
             //アドレスバーを消すためにcanvasの高さを調整しておき100ms後に1ピクセルスクロール
-            canvas.height = $(document).height()+60;
-            setTimeout(start, 100);
+            canvas.height = $(document).height()+70;
+            setTimeout(start, 200);
         } else {
             var wrapper = $("#main")[0];
             wrapper.innerHTML = "Your browser does not appear to support " + "the HTML5 Canvas element";
@@ -47,7 +49,7 @@ var NEWS = {
         //dialog = new Dialog($('#dialog'));
     });
     function start(){
-        scrollTo(0,1);
+        scrollTo(0,2);
         ready_scroll_flag = 1;
         checkready();
     }
@@ -103,6 +105,7 @@ var NEWS = {
 
             (function(target) {
                 stage.onPress = function(evt) {
+                    compass_flag = 0;
                     var offsetX = screen_azimuth;
                     var offsetY = screen_elevation;
                     evt.onMouseMove = function(ev) {
@@ -282,41 +285,33 @@ var NEWS = {
         return  canvas.height - ( (canvas.height / 2) * target_elevation / SCREEN_VERTICAL_VIEW_ANGLE + canvas.height / 2);
     }
 
-    function handleMouseDown() {
-        isMouseDown = true;
-        stage.removeChild(txt);
-
-        var s = new Shape();
-        oldX = stage.mouseX;
-        oldY = stage.mouseY;
-        oldMidX = stage.mouseX;
-        oldMidY = stage.mouseY;
-        var g = s.graphics;
-        var thickness = Math.random() * 30 + 10 | 0;
-        g.setStrokeStyle(thickness + 1, 'round', 'round');
-        var color = Graphics.getRGB(Math.random()*255 | 0 ,Math.random()*255 | 0, Math.random()*255 | 0);
-        g.beginStroke(color);
-        stage.addChild(s);
-        currentShape = s;
-    }
-
-    function handleMouseUp() {
-        isMouseDown = false;
-    }
-
 })(window);
 
 window.ondeviceorientation = function(event) {
-    var w = event.webkitCompassHeading - 270;
-    w = w < 0 ? 360 + w : w ;
-    //var a = 360 - (event.alpha*1/1);
-    //var b =(event.beta*1/1);
-    var g = (-(event.gamma*1/1) - 90 );
-    //g = g * low_pass_filter + screen_elevation * (1.0 - low_pass_filter);
-    g = (g < -180) ? (g >= -270 ? g + 360 : g ) : g ;
-    g = (g > 90) ? 90 : ( g < -90 ? -90 : g );
-    screen_azimuth = w ? w : 0;
-    screen_elevation = g;
+    if(compass_flag){
+        var w = event.webkitCompassHeading - 270;
+        w = w < 0 ? 360 + w : w ;
+        //var a = 360 - (event.alpha*1/1);
+        //var b =(event.beta*1/1);
+        var g = (-(event.gamma*1/1) - 90 );
+        //g = g * low_pass_filter + screen_elevation * (1.0 - low_pass_filter);
+        g = (g < -180) ? (g >= -270 ? g + 360 : g ) : g ;
+        g = (g > 90) ? 90 : ( g < -90 ? -90 : g );
+        screen_azimuth = w ? w : 0;
+        screen_elevation = g;
+    }
 }
 
+
+window.addEventListener('devicemotion', function(e) {
+    if( !compass_flag ) {
+        var acc = e.accelerationIncludingGravity;
+        curX = acc.x;
+        curY = acc.y;
+        curZ = acc.z;
+        if( curX > SHAKE_G || curX < -SHAKE_G || curY > SHAKE_G || curY < -SHAKE_G || curZ > SHAKE_G || curZ < -SHAKE_G) {
+            compass_flag = 1;
+        }
+    }
+}, false);
 
