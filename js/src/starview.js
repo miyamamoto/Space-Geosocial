@@ -10,7 +10,7 @@ var screen_elevation = 0; //高角度
 //var SCREEN_VERTICAL_VIEW_ANGLE = 4.764;
 var SCREEN_HORIZONTAL_VIEW_ANGLE = 30;
 var SCREEN_VERTICAL_VIEW_ANGLE = 20;
-var STAR_NUM = 100;
+var STAR_NUM = 50;
 var low_pass_filter = 0.5;
 var low_pass_azumith = [0, 0, 0];
 var NEWS = {
@@ -80,10 +80,7 @@ var NEWS = {
             //KASHIWAI API
             var bsc = BSC.BSC;
 
-            console.log("bsc");
-            console.log(bsc[0]);
             var time = new Orb.Time(date);
-            console.log("star.data");
             for(var i = 0; i < STAR_NUM; i++){
                 var target = {
                   "ra": bsc[i].RAh,
@@ -92,33 +89,13 @@ var NEWS = {
                 var observe = new Orb.Observation(observer,target);
                 var look = observe.horizontal(time);
                 star.push({"data" : look});
-                console.log(star[i].data);
             }
 
             // create a new stage and point it at our canvas:
             canvas = $("#stageCanvas")[0];
             stage = new Stage(canvas);
-            stage.enableMouseOver(10);
-            //stage.onMouseDown = handleMouseDown;
-            //stage.onMouseUp = handleMouseUp;
-            Touch.enable(stage);
-
-            (function(target) {
-                stage.onPress = function(evt) {
-                    compass_flag = 0;
-                    var offsetX = screen_azimuth;
-                    var offsetY = screen_elevation;
-                    evt.onMouseMove = function(ev) {
-                        console.log("move!");
-                        screen_azimuth = (-2 * SCREEN_HORIZONTAL_VIEW_ANGLE * (ev.stageX - evt.stageX) / canvas.width + offsetX) % 360;
-                        //screen_azimuth = screen_azimuth < 0 ? 360 - screen_azimuth : screen_azimuth % 360 ;
-                        screen_elevation = 2 * SCREEN_VERTICAL_VIEW_ANGLE * (ev.stageY - evt.stageY) / canvas.height + offsetY;
-                        screen_elevation = (screen_elevation > 90) ? 90 : ( screen_elevation < -90 ? -90 : screen_elevation );
-                        //target.x = ev.stageX+offsetX;
-                        //target.y = ev.stageY+offsetY;
-                    }
-                }
-            })(stage);
+            //stage.enableMouseOver(10);
+            //Touch.enable(stage);
 
             // draw the sky:
             sky = new Shape();
@@ -146,17 +123,26 @@ var NEWS = {
                 var size = ((7-bsc[i].Vmag )*1.5)+1;
 
                 //Shape
-                star[i]["shape"] = new Shape();
-                star[i].shape.graphics.beginFill("#FFF").drawCircle(pos_x, pos_y, size);
+                //star[i]["shape"] = new Shape();
+                //star[i].shape.graphics.beginFill("#FFF").drawCircle(pos_x, pos_y, size);
+                //star[i].shape.onClick = function(evt) {
+                //    alert("Check in. " + bsc[i].Name);
+                //}
                 //stage.addChild(star[i].shape);
 
 
                 star[i]["name"] = new Text(bsc[i].Name ? "★" + bsc[i].Name : "・" + bsc[i].bfID, "14px Arial", "#EEE");
+                Touch.enable(star[i].name);
                 star[i].name.textBaseline = "top";
+                star[i].name.onClick = function(evt) {
+                    console.log("touch star name!");
+                    alert("Check in. " + bsc[i].Name);
+                }
+
                 stage.addChild(star[i].name);
 
-                star[i].shape.x = pos_x;
-                star[i].shape.y = pos_y;
+                //star[i].shape.x = pos_x;
+                //star[i].shape.y = pos_y;
                 star[i].name.x = pos_x;
                 star[i].name.y = pos_y;
             }
@@ -199,7 +185,7 @@ var NEWS = {
             stage.addChild(display.west);
 
             Ticker.addListener(that);
-            Ticker.setFPS(10);
+            Ticker.setFPS(30);
         }
 
         that.stop = function(){
@@ -271,8 +257,6 @@ var NEWS = {
 
             // draw the updates to stage:
             stage.update();
-            //console.log("sirius_shape" + star[0].shape.x + " : " + star[0].shape.y);
-            //console.log("sirius_name"  + star[0].name.x  + " : " + star[0].name.y);
         }
         return that;
     }
@@ -302,7 +286,6 @@ window.ondeviceorientation = function(event) {
     }
 }
 
-
 window.addEventListener('devicemotion', function(e) {
     if( !compass_flag ) {
         var acc = e.accelerationIncludingGravity;
@@ -315,3 +298,37 @@ window.addEventListener('devicemotion', function(e) {
     }
 }, false);
 
+var is_touch = ('ontouchstart' in window);
+var touch_flag = 0;
+var touchX;
+var touchY;
+var moveX;
+var moveY;
+var offsetX;
+var offsetY;
+$(window).bind({
+    'touchstart mousedown': function(e) {
+        compass_flag = 0;
+        touch_flag = 1;
+        offsetX = screen_azimuth;
+        offsetY = screen_elevation;
+        e.preventDefault();
+        touchX = (is_touch ? event.changedTouches[0].clientX : e.clientX);
+        touchY = (is_touch ? event.changedTouches[0].clientY : e.clientY);
+    },
+    'touchmove mousemove': function(e) {
+        if (touch_flag){
+            moveX = (is_touch ? event.changedTouches[0].clientX : e.clientX);
+            moveY = (is_touch ? event.changedTouches[0].clientY : e.clientY);
+
+            e.preventDefault();
+            screen_azimuth = (-2 * SCREEN_HORIZONTAL_VIEW_ANGLE * (moveX - touchX) / canvas.width + offsetX) % 360;
+
+            screen_elevation = 2 * SCREEN_VERTICAL_VIEW_ANGLE * (moveY - touchY) / canvas.height + offsetY;
+            screen_elevation = (screen_elevation > 90) ? 90 : ( screen_elevation < -90 ? -90 : screen_elevation );
+        }
+    },
+    'touchend mouseup': function(e) {
+        touch_flag = 0;
+    }
+});
