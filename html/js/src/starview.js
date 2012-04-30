@@ -7,7 +7,8 @@ var canvas
 var screen_azimuth = 0; //方位
 var screen_elevation = 0; //高角度
 var SCREEN_HORIZONTAL_VIEW_ANGLE = 30;
-var SCREEN_VERTICAL_VIEW_ANGLE = 20;
+//var SCREEN_VERTICAL_VIEW_ANGLE = 20;
+var SCREEN_VERTICAL_VIEW_ANGLE = 180;	//PCでのデバッグ用に高さを90に設定しています。20だと星がひとつも表示されない＞＜
 var STAR_NUM = 50;
 var low_pass_filter = 0.5;
 var low_pass_azumith = [0, 0, 0];
@@ -28,7 +29,15 @@ var NEWS = {
             canvas = $("#stageCanvas")[0];
             canvas.height = $(document).height();
             canvas.width = $(document).width();
-            var m = main().init(canvas);
+            $.ajax({
+            	type: 'get',
+            	dataType: 'json',
+            	url: '/index.php/checkin/starlist',
+            	success: function(data){
+            		window.STARS_DATA = data;
+            		var m = main().init(canvas);
+            	}
+            })
         }
     }
 
@@ -44,10 +53,16 @@ var NEWS = {
             var wrapper = $("#main")[0];
             wrapper.innerHTML = "Your browser does not appear to support " + "the HTML5 Canvas element";
         }
-        dialog = new Dialog($('#dialog'));
+        dialog = new Dialog($('#dialog'), $('#checkedin'));
     });
     function start(){
-        scrollTo(0,2);
+        if( (navigator.userAgent.match(/iPhone/i)) || 
+			(navigator.userAgent.match(/iPod/i)) || 
+			(navigator.userAgent.match(/iPad/i)) ) {
+			scrollTo(0,2);
+		}else if (navigator.userAgent.match(/Android/i)) {
+			window.scrollTo(0,2);
+		}
         ready_scroll_flag = 1;
         checkready();
     }
@@ -76,13 +91,14 @@ var NEWS = {
         that.init = function(canvas,stat) {
 
             //KASHIWAI API
-            var bsc = BSC.BSC;
+            //var bsc = BSC.BSC;
+            bsc = window.STARS_DATA;
 
             var time = new Orb.Time(date);
             for(var i = 0; i < STAR_NUM; i++){
-                var target = {
-                  "ra": bsc[i].RAh,
-                  "dec": bsc[i].DEd
+                var target = {　
+                  "ra": bsc[i].rah,
+                  "dec": bsc[i].ded
                 };
                 var observe = new Orb.Observation(observer,target);
                 var look = observe.horizontal(time);
@@ -118,13 +134,13 @@ var NEWS = {
                 }
                 pos_x = calc_screen_x(pos_x);
                 var pos_y = calc_screen_y( star[i].data.elevation - screen_elevation );
-                var size = ((5-bsc[i].Vmag )*1.9)+1;
+                var size = ((5-bsc[i].vmag )*1.9)+1;
 
-                var star_text = new Text(bsc[i].Name ? bsc[i].Name : bsc[i].bfID, "14px Arial", "#EEE");
+                var star_text = new Text(bsc[i].name ? bsc[i].name : bsc[i].bfid, "14px Arial", "#EEE");
                 var dialog_data = {
-                    id: bsc[i].id,
+                    id: bsc[i].starid,
                     name: star_text.text,
-                    vmag: bsc[i].Vmag
+                    vmag: bsc[i].vmag
                 }
 
                 star_text.data = dialog_data;
@@ -132,7 +148,7 @@ var NEWS = {
                 //Touch.enable(star[i].name);
                 star[i].name.textBaseline = "top";
                 star[i].name.onClick = function(evt) {
-                    dialog.open(this.data.name, this.data.vmag, 100);
+                    dialog.open(this.data.id, this.data.name, this.data.vmag, 100);
                 }
                 stage.addChild(star[i].name);
 
@@ -143,8 +159,7 @@ var NEWS = {
                 star[i].shape.x = pos_x;
                 star[i].shape.y = pos_y;
                 star[i].shape.onClick = function(evt) {
-                    //alert("Check in. ");
-                    dialog.open(this.data.name, this.data.vmag, 100);
+                    dialog.open(this.data.id, this.data.name, this.data.vmag, 100);
                 }
 
                 stage.addChild(star[i].shape);
@@ -345,34 +360,137 @@ window.addEventListener('devicemotion', function(e) {
 var Dialog,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  Dialog = (function() {
+Dialog = (function() {
 
     Dialog.name = 'Dialog';
 
-    function Dialog(dialog) {
+    function Dialog(dialog, checkedin) {
       var _this = this;
       this.dialog = dialog;
+      this.checkedin = checkedin;
+      this.checkedin_list = $('#checkedin-list', checkedin);
+      this.checkedin_base = $($('#checkedin_base').html());
       this.close = __bind(this.close, this);
-
       this.open = __bind(this.open, this);
+      this.open_ci = __bind(this.open_ci, this);
+      this.close_ci = __bind(this.close_ci, this);
 
       this.name = $('#star-name', this.dialog);
       this.vmag = $('#star-vmag', this.dialog);
-      this.cicnt = $('#user-count', this.dialog);
-      this.vmag_suffix = '等星';
-      this.cicnt_suffix = '人がチェックインしてます';
+      this.cicnt = $('#user-count a', this.dialog);
+      this.form = $('#checkin-form', this.dialog);
+      this.message = $('#checkin-message', this.dialog);
+      this.latitude = $('input[name="latitude"]', this.form);
+      this.longitude = $('input[name="longitude"]', this.form);
+      this.submit = $('#checkin-btn', this.form);
+      this.vmag_suffix = ' magnitude star';
+      this.cicnt_suffix = ' people checked in.';
       this.close_btn = $('#close-btn', this.dialog);
       this.close_btn.on('click', function() {
         _this.close();
         return false;
       });
     }
+    
+    Dialog.prototype.open_ci = function(id){
+    	this.close();
+    	var _this = this;
+    	$.ajax({
+    		type: 'get',
+    		dataType: 'json',
+    		url: '/index.php/checkin/checkinlist/' + id,
+    		success: function(data){
+    			_this.render_ci(data);
+    		}
+    	});
+    }
+    
+    Dialog.prototype.render_ci = function(data){
+    	var _this = this;
+    	this.checkedin_list.html('');
+    	$.each(data, function(index, ci){
+			var $li = _this.checkedin_base.clone();
+			$('.checkin-image img', $li).attr('src', ci.icon);
+			$('.checkin-name', $li).text(ci.uname);
+			$('.checkin-message', $li).text(ci.message.replace(/(\r\n|\r|\n)/g, '<br />'));
+			$('.checkin-place', $li).text(ci.location);
+			$('.checkin-date', $li).text(ci.checintime);
+			$li.prependTo(_this.checkedin_list);
+			$li.css({
+				//'background-color': 'rgb(' + Math.floor( Math.random() * 255 ) + ',' + Math.floor( Math.random() * 255 ) + ',' + Math.floor( Math.random() * 255 ) + ')'
+				'background-color': '#f8f8f8'
+			})
+		});
+		var current_y = 0;
+		var drag_y = 0;
+		var getY = function(event){
+			if (navigator.userAgent.match(/Android/i)) {
+				return event.originalEvent.originalEvent.touches[0].clientY;
+			}else{
+				return event.originalEvent.clientY;
+			}
+		}
+		this.checkedin_list.flickable({
+			dragStart: function(event, obj){
+				current_y = getY(event);
+			},
+			drag: function(event, obj){
+				drag_y = getY(event);
+				if(current_y > drag_y){
+					_this.checkedin_list[0].scrollTop += (current_y - drag_y);
+				}else{
+					_this.checkedin_list[0].scrollTop -= (drag_y - current_y);
+				}
+				current_y = drag_y;
+			}
+		}).flickable('refresh');
+		
+		$('#checkin-close-btn a', _this.checkedin).off('click').on('click', function(){
+			_this.close_ci();
+		});
+		
+		_this.checkedin.slideDown('slow', function(){
+			_this.checkedin_list.height(_this.checkedin.height() - 40);
+		});
+    }
+    
+    Dialog.prototype.close_ci = function(){
+    	this.checkedin_list.flickable('destroy');
+    	this.checkedin.slideUp('slow');
+    }
 
-    Dialog.prototype.open = function(name, vmag, checkin_count) {
-         //console.log('open');
+    Dialog.prototype.open = function(id, name, vmag, checkin_count) {
+      var _this = this;
+      if (checkin_count == null) {
+        checkin_count = 0;
+      }
+      this.message.val('');
       this.name.text(name);
-      this.vmag.text(vmag + this.vmag_suffix);
+      this.vmag.text((Math.round(vmag * 100) / 100) + this.vmag_suffix);
       this.cicnt.text(checkin_count + this.cicnt_suffix);
+      this.submit.off('click').on('click', function() {
+        //_this.send(id, 35.658, 139.741);
+        $.ajax({
+	    	type: 'post',
+	    	dataType: 'json',
+	    	data: {
+	    		latitude: 35.658,
+	    		longitude: 139.741,
+	    		message: _this.message.val()
+	    	},
+	    	url: '/index.php/checkin/reg_checkin/' + id,
+	    	success: function(data){
+	    		_this.close();
+	    		_this.render_ci(data);
+	    		
+	    	}
+	    });
+        return false;
+      });
+      this.cicnt.off('click').on('click', function(){
+      	_this.open_ci(id);
+      	return false;
+      });
       return this.dialog.slideDown();
     };
 

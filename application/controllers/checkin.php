@@ -64,8 +64,8 @@ class Checkin extends CI_Controller {
 
 
     	//緯度経度から場所情報の取得（日本語/英語）して登録データ配列に追加
-		$reg_data['location_japanese'] = $this->_revgeo($in_data['latitude'], $in_data['longtitude'],'ja');
-		$reg_data['location_english'] = $this->_revgeo($in_data['latitude'], $in_data['longtitude'],'en');
+		$reg_data['location_japanese'] = trim($this->_revgeo($in_data['latitude'], $in_data['longtitude'],'ja'));
+		$reg_data['location_english'] = trim($this->_revgeo($in_data['latitude'], $in_data['longtitude'],'en'));
 
 		$reg_data['starid'] = $starid;
 
@@ -75,17 +75,14 @@ class Checkin extends CI_Controller {
 		$this->Star_checkin->reg_checkin($reg_data);
 
 	    //チェックインリストの取得
-		$checkinlist = $this->checkinlist($starid);
-		$this->view_data['checkinlist'] = $checkinlist;
+		$checkinlist = $this->Star_checkin->get_checkinlist($starid);
 
-		//星の名前を取得
-		$starname = $this->Star_list->get_starname($starid);
-		//多言語対応でタイトルの構成
-		$this->view_data['title'] = str_replace('%s', $starname, $this->lang->line('lnkst_listtitle'));
-		//多言語対応で名前の呼称の構成
-		$this->view_data['uname_suffix'] = $this->lang->line('lnkst_unamesuffix');
+		//JSONエンコード
+		$checkinlist = json_encode($checkinlist);
 
-    	$this->parser->parse('checkinlist.tpl', $this->view_data);
+		//出力時のHEADER指定
+		$this->output->set_header("Content-Type: text/javascript; charset=utf-8");
+		echo($checkinlist);
 
     }
 
@@ -98,8 +95,14 @@ class Checkin extends CI_Controller {
 		$in_data = $this->input->post();
 
     	//チェックインリスト一覧の取得
-		$res = $this->Star_checkin->get_checkinlist($starid);
-       	return $res;
+		$checkinlist = $this->Star_checkin->get_checkinlist($starid);
+
+		//JSONエンコード
+		$checkinlist = json_encode($checkinlist);
+
+		//出力時のHEADER指定
+		$this->output->set_header("Content-Type: text/javascript; charset=utf-8");
+		echo($checkinlist);
 
     }
 

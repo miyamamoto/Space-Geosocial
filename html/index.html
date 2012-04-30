@@ -8,9 +8,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>LinkAStar</title>
         <script type="text/javascript" src="js/libs/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="js/libs/jquery.flickable-1.0b3.min.js"></script>
         <script type="text/javascript" src="js/libs/easeljs-0.4.2.min.js"></script>
         <script type="text/javascript" src="js/libs/orb.js/core.js"></script>
-        <script type="text/javascript" src="data/bsc_short.js"></script>
+        <script type="text/javascript" src="js/libs/bsc_short.js"></script>
         <script type="text/javascript" src="js/src/starview.js"></script>
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <link rel="stylesheet" type="text/css" href="css/dialog.css">
@@ -28,13 +29,13 @@
                             <p id="star-vmag">-1.5等星</p>
                         </div>
                         <p id="close-btn"><a href="#">X</a></p>
-                        <p id="user-count">300人がチェックインしてます</p>
+                        <p id="user-count"><a href="#">300人がチェックインしてます</a></p>
                     </div>
                     <div id="checkin-container">
                     	<form method="post" id="checkin-form">
 	                        <textarea id="checkin-message" name="message"></textarea>
 	                        <div id="checkin-btn-container">
-	                            <a href="#" id="checkin-btn">チェックイン</a>
+	                            <a href="#" id="checkin-btn">Check in!</a>
 	                        </div>
 	                        <input type="hidden" name="uid" value="1" />
 		  			        <input type="hidden" name="latitude" value="" />
@@ -42,10 +43,37 @@
 	  				    </form>
                     </div>
                 </div>
-                <div id="dialog-right">
-
-                </div>
             </div>
         </div>
+        <div id="checkedin">
+        	<p id="checkin-close-btn"><a href="#">X</a></p>
+        	<div id="checkedin-container">
+        		<div id="text-container">
+        			<ul id="checkedin-list">
+        			</ul>
+        		</div>
+        	</div>
+        </div>
+        <div id="checkedin_base">
+	        <li>
+				<div class="checkin">
+					<div class="checkin-left">
+						<p class="checkin-image">
+							<img src="/img/test.png" />
+						</p>
+						<p class="checkin-name">Aliceさん</p>
+						<div class="checin-header-right">
+							<p class="checkin-place">東京都渋谷区</p>
+							<p class="checkin-date">2012/04/30 13:24</p>
+						</div>
+					</div>
+					<div class="checkin-right">
+						<div class="checkin-right-main">
+							<p class="checkin-message">この星にチェックインしてみました。今、空の中で一番きれいですよ。</p>
+						</div>
+					</div>
+				</div>
+			</li>
+		</div>
     </body>
 </html>

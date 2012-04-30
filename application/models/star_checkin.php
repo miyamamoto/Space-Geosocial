@@ -41,7 +41,7 @@ class Star_checkin extends CI_Model {
     public function get_checkinlist($starid)
     {
 
-    	$sql = "SELECT uid, (SELECT uname FROM user WHERE uid = checkinlist.uid) as uname, (SELECT icon FROM user WHERE uid = checkinlist.uid) as icon, location_".$this->lang." as location, message, DATE_FORMAT(checkintime,'%Y/%m/%d %k:%i') as checkintime FROM checkinlist WHERE starid = ? ORDER BY checkintime DESC";
+    	$sql = "SELECT checkinid, uid, (SELECT uname FROM user WHERE uid = checkinlist.uid) as uname, (SELECT icon FROM user WHERE uid = checkinlist.uid) as icon, location_".$this->lang." as location, message, DATE_FORMAT(checkintime,'%Y/%m/%d %k:%i') as checkintime FROM checkinlist WHERE starid = ? ORDER BY checkintime DESC";
     	$var_array = array($starid);
 
 		$query = $this->db->query($sql, $var_array);
