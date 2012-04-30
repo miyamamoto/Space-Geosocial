@@ -44,13 +44,13 @@
 | the active record class
 */
 
-$active_group = 'product';
+$active_group = 'default';
 $active_record = TRUE;
 
 $db['default']['hostname'] = 'localhost';
 $db['default']['username'] = 'progusr';
 $db['default']['password'] = 'pas4prog';
-$db['default']['database'] = 'statr-checkin';
+$db['default']['database'] = 'linkastar';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
@@ -67,11 +67,11 @@ $db['default']['stricton'] = FALSE;
 $db['product']['hostname'] = 'localhost';
 $db['product']['username'] = 'progusr';
 $db['product']['password'] = 'pas4prog';
-$db['product']['database'] = 'star-checkin';
+$db['product']['database'] = 'linkastar';
 $db['product']['dbdriver'] = 'mysql';
 $db['product']['dbprefix'] = '';
 $db['product']['pconnect'] = TRUE;
-$db['product']['db_debug'] = TRUE;
+$db['product']['db_debug'] = FALSE;
 $db['product']['cache_on'] = FALSE;
 $db['product']['cachedir'] = '';
 $db['product']['char_set'] = 'utf8';

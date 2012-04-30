@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteBase /
+RewriteCond $1 !^(index\.php|sitemap.xml|sitemap_ssl.xml|css|js|captcha|uploads|templates|blocks|phpMyAdmin|.+\.gif$|.+\.jpg$|.+\.jpeg$|.+\.png$|.+\.js$|.+\.css$|.+\.json$|.+\.ico$|.+\.swf$|.+\.flv$)
+RewriteRule ^(.*)$ /index.php?__REQ__=$1 [L]

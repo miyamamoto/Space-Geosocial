@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <!-- Mobile viewport optimization http://goo.gl/b9SaQ -->
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LinkAStar</title>
+        <script type="text/javascript" src="js/libs/jquery-1.7.2.min.js"></script>
+        <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
+        <script type="text/javascript" src="js/src/starview.js"></script>
+        <script type="text/javascript" src="js/libs/orb.js/core.js"></script>
+        <script type="text/javascript" src="js/libs/html5sql/html5sql.min.js"></script>
+        <script type="text/javascript" src="js/libs/stars_data.js"></script>
+        <script type="text/javascript" src="js/src/data.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" type="text/css" href="css/dialog.css">
+    </head>
+    <body>
+        <div id="main" class="canvasHolder" role="main">
+            <canvas id="stageCanvas" width="480" height="360" style="background-color:#000"></canvas>
+        </div>
+        <div id="dialog">
+            <div id="dialog-container">
+                <div id="dialog-left">
+                    <div id="text-container">
+                        <div id="text-left">
+                            <p id="star-name">Sirius</p>
+                            <p id="star-vmag">-1.5等星</p>
+                        </div>
+                        <p id="close-btn"><a href="#">X</a></p>
+                        <p id="user-count">300人がチェックインしてます</p>
+                    </div>
+                    <div id="checkin-container">
+                    	<form method="post" id="checkin-form">
+	                        <textarea id="checkin-message" name="message"></textarea>
+	                        <div id="checkin-btn-container">
+	                            <a href="#" id="checkin-btn">チェックイン</a>
+	                        </div>
+	                        <input type="hidden" name="uid" value="1" />
+		  			        <input type="hidden" name="latitude" value="" />
+	  				        <input type="hidden" name="longtitude" value="" />
+	  				    </form>
+                    </div>
+                </div>
+                <div id="dialog-right">
+
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

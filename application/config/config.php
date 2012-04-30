@@ -69,7 +69,15 @@ $config['url_suffix'] = '';
 | than english.
 |
 */
-$config['language']	= 'japanese';
+
+if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && preg_match('(ja)', $_SERVER['HTTP_ACCEPT_LANGUAGE']))
+{
+	$config['language']	= 'japanese';
+}
+else
+{
+	$config['language']	= 'english';
+}
 
 /*
 |--------------------------------------------------------------------------

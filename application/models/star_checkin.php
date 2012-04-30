@@ -3,18 +3,26 @@
 
 class Star_checkin extends CI_Model {
 
+	private $lang = "japanese";
+
     function __construct()
     {
         // Model クラスのコンストラクタを呼び出す
         parent::__construct();
+
+        $language = $this->config->item('language');
+        if(!empty($language))
+        {
+	        $this->lang = $language;
+        }
     }
 
     //チェックインを登録する
     public function reg_checkin($reg_data)
     {
 
-    	$sql = "INSERT INTO checkinlist (uid, checkintime, location, message, starid) VALUES (?, now(), ?, ?, ?)";
-    	$var_array = array($reg_data['uid'], $reg_data['location'], $reg_data['message'], $reg_data['starid']);
+    	$sql = "INSERT INTO checkinlist (uid, starid, location_japanese, location_english, message, checkintime) VALUES (?, ?, ?, ?, ?, now())";
+    	$var_array = array($reg_data['uid'], $reg_data['starid'], $reg_data['location_japanese'], $reg_data['location_english'], $reg_data['message']);
 
 		$this->db->query($sql, $var_array);
 
@@ -33,7 +41,7 @@ class Star_checkin extends CI_Model {
     public function get_checkinlist($starid)
     {
 
-    	$sql = "SELECT uid, (SELECT uname FROM user WHERE uid = checkinlist.uid) as uname, DATE_FORMAT(checkintime,'%Y/%m/%d %k:%i') as checkintime, location, message FROM checkinlist WHERE starid = ? ORDER BY checkintime DESC";
+    	$sql = "SELECT uid, (SELECT uname FROM user WHERE uid = checkinlist.uid) as uname, (SELECT icon FROM user WHERE uid = checkinlist.uid) as icon, location_".$this->lang." as location, message, DATE_FORMAT(checkintime,'%Y/%m/%d %k:%i') as checkintime FROM checkinlist WHERE starid = ? ORDER BY checkintime DESC";
     	$var_array = array($starid);
 
 		$query = $this->db->query($sql, $var_array);
