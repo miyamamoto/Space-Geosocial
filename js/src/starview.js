@@ -6,8 +6,6 @@ var dialog;
 var canvas
 var screen_azimuth = 0; //方位
 var screen_elevation = 0; //高角度
-//var SCREEN_HORIZONTAL_VIEW_ANGLE = 7.125;
-//var SCREEN_VERTICAL_VIEW_ANGLE = 4.764;
 var SCREEN_HORIZONTAL_VIEW_ANGLE = 30;
 var SCREEN_VERTICAL_VIEW_ANGLE = 20;
 var STAR_NUM = 50;
@@ -120,32 +118,35 @@ var NEWS = {
                 }
                 pos_x = calc_screen_x(pos_x);
                 var pos_y = calc_screen_y( star[i].data.elevation - screen_elevation );
-                var size = ((7-bsc[i].Vmag )*1.5)+1;
-
-                //Shape
-                //star[i]["shape"] = new Shape();
-                //star[i].shape.graphics.beginFill("#FFF").drawCircle(pos_x, pos_y, size);
-                //star[i].shape.onClick = function(evt) {
-                //    alert("Check in. " + bsc[i].Name);
-                //}
-                //stage.addChild(star[i].shape);
+                var size = ((5-bsc[i].Vmag )*1.9)+1;
 
 
-                star[i]["name"] = new Text(bsc[i].Name ? "★" + bsc[i].Name : "・" + bsc[i].bfID, "14px Arial", "#EEE");
-                Touch.enable(star[i].name);
+
+                star[i]["name"] = new Text(bsc[i].Name ? bsc[i].Name : bsc[i].bfID, "14px Arial", "#EEE");
+                //Touch.enable(star[i].name);
                 star[i].name.textBaseline = "top";
                 star[i].name.onClick = function(evt) {
-                    console.log("touch star name!");
-                    alert("Check in. " + bsc[i].Name);
+                    alert("Check in. ");
                 }
-
                 stage.addChild(star[i].name);
 
-                //star[i].shape.x = pos_x;
-                //star[i].shape.y = pos_y;
-                star[i].name.x = pos_x;
-                star[i].name.y = pos_y;
+                //Shape
+                star[i]["shape"] = new Shape();
+                star[i].shape.graphics.beginFill("#FFF").drawCircle(0, 0, size);
+                star[i].shape.x = pos_x;
+                star[i].shape.y = pos_y;
+                star[i].shape.onClick = function(evt) {
+                    alert("Check in. ");
+                }
+
+                stage.addChild(star[i].shape);
+
+                star[i].shape.x = pos_x;
+                star[i].shape.y = pos_y;
+                star[i].name.x = pos_x + 10;
+                star[i].name.y = pos_y - 10;
             }
+            console.log(star);
 
             //display azimuth and elevation
             display = {
@@ -223,10 +224,10 @@ var NEWS = {
                 pos_x = calc_screen_x(pos_x);
                 var pos_y = star[i].data.elevation - screen_elevation;
                 pos_y = calc_screen_y(pos_y);
-                //star[i].shape.x = pos_x;
-                //star[i].shape.y = pos_y;
-                star[i].name.x = pos_x;
-                star[i].name.y = pos_y;
+                star[i].shape.x = pos_x;
+                star[i].shape.y = pos_y;
+                star[i].name.x = pos_x + 10;
+                star[i].name.y = pos_y - 10;
             }
             //NEWS
             if ( NEWS.N_AZIMUTH >= screen_azimuth - SCREEN_HORIZONTAL_VIEW_ANGLE + 360){
@@ -332,3 +333,4 @@ $(window).bind({
         touch_flag = 0;
     }
 });
+
