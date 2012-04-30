@@ -120,15 +120,15 @@ var NEWS = {
                 var pos_y = calc_screen_y( star[i].data.elevation - screen_elevation );
                 var size = ((5-bsc[i].Vmag )*1.9)+1;
 
-				var star_text = new Text(bsc[i].Name ? bsc[i].Name : bsc[i].bfID, "14px Arial", "#EEE");
-				var dialog_data = {
-					id: bsc[i].id,
-					name: star_text.text,
-					vmag: bsc[i].Vmag
-				}
-				
-				star_text.data = dialog_data;
-				star[i]["name"] = star_text;
+                var star_text = new Text(bsc[i].Name ? bsc[i].Name : bsc[i].bfID, "14px Arial", "#EEE");
+                var dialog_data = {
+                    id: bsc[i].id,
+                    name: star_text.text,
+                    vmag: bsc[i].Vmag
+                }
+
+                star_text.data = dialog_data;
+                star[i]["name"] = star_text;
                 //Touch.enable(star[i].name);
                 star[i].name.textBaseline = "top";
                 star[i].name.onClick = function(evt) {
@@ -301,46 +301,46 @@ window.addEventListener('devicemotion', function(e) {
         curX = acc.x;
         curY = acc.y;
         curZ = acc.z;
-        if( curX > SHAKE_G || curX < -SHAKE_G || curY > SHAKE_G || curY < -SHAKE_G || curZ > SHAKE_G || curZ < -SHAKE_G) {
+        if( (curX > SHAKE_G || curX < -SHAKE_G || curY > SHAKE_G || curY < -SHAKE_G || curZ > SHAKE_G || curZ < -SHAKE_G)) {
             compass_flag = 1;
         }
     }
 }, false);
 
-var is_touch = ('ontouchstart' in window);
-var touch_flag = 0;
-var touchX;
-var touchY;
-var moveX;
-var moveY;
-var offsetX;
-var offsetY;
-$(window).bind({
-    'touchstart mousedown': function(e) {
-        compass_flag = 0;
-        touch_flag = 1;
-        offsetX = screen_azimuth;
-        offsetY = screen_elevation;
-        e.preventDefault();
-        touchX = (is_touch ? event.changedTouches[0].clientX : e.clientX);
-        touchY = (is_touch ? event.changedTouches[0].clientY : e.clientY);
-    },
-    'touchmove mousemove': function(e) {
-        if (touch_flag){
-            moveX = (is_touch ? event.changedTouches[0].clientX : e.clientX);
-            moveY = (is_touch ? event.changedTouches[0].clientY : e.clientY);
-
-            e.preventDefault();
-            screen_azimuth = (-2 * SCREEN_HORIZONTAL_VIEW_ANGLE * (moveX - touchX) / canvas.width + offsetX) % 360;
-
-            screen_elevation = 2 * SCREEN_VERTICAL_VIEW_ANGLE * (moveY - touchY) / canvas.height + offsetY;
-            screen_elevation = (screen_elevation > 90) ? 90 : ( screen_elevation < -90 ? -90 : screen_elevation );
-        }
-    },
-    'touchend mouseup': function(e) {
-        touch_flag = 0;
-    }
-});
+//var is_touch = ('ontouchstart' in window);
+//var touch_flag = 0;
+//var touchX;
+//var touchY;
+//var moveX;
+//var moveY;
+//var offsetX;
+//var offsetY;
+//$(window).bind({
+//    'touchstart mousedown': function(e) {
+//        compass_flag = 0;
+//        touch_flag = 1;
+//        offsetX = screen_azimuth;
+//        offsetY = screen_elevation;
+//        e.preventDefault();
+//        touchX = (is_touch ? event.changedTouches[0].clientX : e.clientX);
+//        touchY = (is_touch ? event.changedTouches[0].clientY : e.clientY);
+//    },
+//    'touchmove mousemove': function(e) {
+//        if (touch_flag && !dialog_open_flag){
+//            moveX = (is_touch ? event.changedTouches[0].clientX : e.clientX);
+//            moveY = (is_touch ? event.changedTouches[0].clientY : e.clientY);
+//
+//            e.preventDefault();
+//            screen_azimuth = (-2 * SCREEN_HORIZONTAL_VIEW_ANGLE * (moveX - touchX) / canvas.width + offsetX) % 360;
+//
+//            screen_elevation = 2 * SCREEN_VERTICAL_VIEW_ANGLE * (moveY - touchY) / canvas.height + offsetY;
+//            screen_elevation = (screen_elevation > 90) ? 90 : ( screen_elevation < -90 ? -90 : screen_elevation );
+//        }
+//    },
+//    'touchend mouseup': function(e) {
+//        touch_flag = 0;
+//    }
+//});
 
 var Dialog,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -369,7 +369,7 @@ var Dialog,
     }
 
     Dialog.prototype.open = function(name, vmag, checkin_count) {
-   	  //console.log('open');
+         //console.log('open');
       this.name.text(name);
       this.vmag.text(vmag + this.vmag_suffix);
       this.cicnt.text(checkin_count + this.cicnt_suffix);
