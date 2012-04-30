@@ -46,7 +46,7 @@ var NEWS = {
             var wrapper = $("#main")[0];
             wrapper.innerHTML = "Your browser does not appear to support " + "the HTML5 Canvas element";
         }
-        //dialog = new Dialog($('#dialog'));
+        dialog = new Dialog($('#dialog'));
     });
     function start(){
         scrollTo(0,2);
@@ -130,13 +130,17 @@ var NEWS = {
                 //}
                 //stage.addChild(star[i].shape);
 
-
-                star[i]["name"] = new Text(bsc[i].Name ? "★" + bsc[i].Name : "・" + bsc[i].bfID, "14px Arial", "#EEE");
+				var star_text = new Text(bsc[i].Name ? "★" + bsc[i].Name : "・" + bsc[i].bfID, "14px Arial", "#EEE");
+				star_text.data = {
+					
+				}
+				console.log(star[i],bsc[i]);
+                star[i]["name"] = star_text;
                 Touch.enable(star[i].name);
                 star[i].name.textBaseline = "top";
                 star[i].name.onClick = function(evt) {
-                    console.log("touch star name!");
-                    alert("Check in. " + bsc[i].Name);
+                    //alert("Check in. " + this.text.replace(/^./, ''));
+                    dialog.open(name, vmag, checkin_count);
                 }
 
                 stage.addChild(star[i].name);
@@ -332,3 +336,45 @@ $(window).bind({
         touch_flag = 0;
     }
 });
+
+
+var Dialog,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  Dialog = (function() {
+
+    Dialog.name = 'Dialog';
+
+    function Dialog(dialog) {
+      var _this = this;
+      this.dialog = dialog;
+      this.close = __bind(this.close, this);
+
+      this.open = __bind(this.open, this);
+
+      this.name = $('#star-name', this.dialog);
+      this.vmag = $('#star-vmag', this.dialog);
+      this.cicnt = $('#user-count', this.dialog);
+      this.vmag_suffix = '等星';
+      this.cicnt_suffix = '人がチェックインしてます';
+      this.close_btn = $('#close-btn', this.dialog);
+      this.close_btn.on('click', function() {
+        _this.close();
+        return false;
+      });
+    }
+
+    Dialog.prototype.open = function(name, vmag, checkin_count) {
+      this.name.text(name);
+      this.vmag.text(vmag + this.vmag_suffix);
+      this.cicnt.text(checkin_count + this.cicnt_suffix);
+      return this.dialog.slideDown();
+    };
+
+    Dialog.prototype.close = function() {
+      return this.dialog.slideUp();
+    };
+
+    return Dialog;
+
+  })();
