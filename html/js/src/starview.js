@@ -1,14 +1,22 @@
 var ready_db_flag = 0;
 var ready_scroll_flag = 0;
+var ready_stars_flag = 0;
+var ready_place_info_flag = 0;
 var compass_flag = 1;
 var SHAKE_G = 10;
 var dialog;
+var dialog_open_flag;
 var canvas
+var place_info = {
+  "latitude":35.658,
+  "longitude":139.741,
+  "altitude":0
+};
 var screen_azimuth = 0; //方位
 var screen_elevation = 0; //高角度
-var SCREEN_HORIZONTAL_VIEW_ANGLE = 30;
+var SCREEN_HORIZONTAL_VIEW_ANGLE = 90;
 //var SCREEN_VERTICAL_VIEW_ANGLE = 20;
-var SCREEN_VERTICAL_VIEW_ANGLE = 180;	//PCでのデバッグ用に高さを90に設定しています。20だと星がひとつも表示されない＞＜
+var SCREEN_VERTICAL_VIEW_ANGLE = 80;	//PCでのデバッグ用に高さを90に設定しています。20だと星がひとつも表示されない＞＜
 var STAR_NUM = 50;
 var low_pass_filter = 0.5;
 var low_pass_azumith = [0, 0, 0];
@@ -25,20 +33,47 @@ var NEWS = {
 
 (function(window) {
     function checkready(){
-        if(ready_scroll_flag === 1){
+        if(ready_scroll_flag === 1
+        	&& ready_place_info_flag === 1
+        	&& ready_stars_flag === 1){
             canvas = $("#stageCanvas")[0];
             canvas.height = $(document).height();
             canvas.width = $(document).width();
-            $.ajax({
-            	type: 'get',
-            	dataType: 'json',
-            	url: '/index.php/checkin/starlist',
-            	success: function(data){
-            		window.STARS_DATA = data;
-            		var m = main().init(canvas);
-            	}
-            })
+			var m = main().init(canvas);
         }
+    }
+    
+    function get_stars(){
+    	$.ajax({
+        	type: 'get',
+        	dataType: 'json',
+        	url: '/index.php/checkin/starlist',
+        	success: function(data){
+        		window.STARS_DATA = data;
+        		ready_stars_flag = 1;
+        		checkready();
+			}
+       });
+    }
+    
+    function get_place_info(){
+    	if (navigator.geolocation) {
+    		 navigator.geolocation.getCurrentPosition(
+    		 	function(pos){
+    		 		place_info.latitude = pos.coords.latitude;
+    		 		place_info.longitude = pos.coords.longitude;
+    		 		ready_place_info_flag = 1;
+    				checkready();
+    		 	},
+    		 	function(err){
+    		 		ready_place_info_flag = 1;
+    				checkready();
+    		 	}
+    		 );
+    	}else{
+    		ready_place_info_flag = 1;
+    		checkready();
+    	}
     }
 
     $(function() {
@@ -49,6 +84,8 @@ var NEWS = {
             //アドレスバーを消すためにcanvasの高さを調整しておき100ms後に1ピクセルスクロール
             canvas.height = $(document).height()+70;
             setTimeout(start, 200);
+            get_stars();
+            get_place_info();
         } else {
             var wrapper = $("#main")[0];
             wrapper.innerHTML = "Your browser does not appear to support " + "the HTML5 Canvas element";
@@ -79,11 +116,7 @@ var NEWS = {
         var date = new Date();
 
         //　観測者は東京に居るとする（あとで取得する）
-        var observer = {
-          "latitude":35.658,
-          "longitude":139.741,
-          "altitude":0
-        }
+        var observer = place_info;
 
         var my = my || {};
         var that = {};
@@ -93,6 +126,8 @@ var NEWS = {
             //KASHIWAI API
             //var bsc = BSC.BSC;
             bsc = window.STARS_DATA;
+            
+            STAR_NUM = bsc.length;
 
             var time = new Orb.Time(date);
             for(var i = 0; i < STAR_NUM; i++){
@@ -140,7 +175,8 @@ var NEWS = {
                 var dialog_data = {
                     id: bsc[i].starid,
                     name: star_text.text,
-                    vmag: bsc[i].vmag
+                    vmag: bsc[i].vmag,
+                    count: bsc[i].count
                 }
 
                 star_text.data = dialog_data;
@@ -148,7 +184,7 @@ var NEWS = {
                 //Touch.enable(star[i].name);
                 star[i].name.textBaseline = "top";
                 star[i].name.onClick = function(evt) {
-                    dialog.open(this.data.id, this.data.name, this.data.vmag, 100);
+                    dialog.open(this.data.id, this.data.name, this.data.vmag, this.data.count);
                 }
                 stage.addChild(star[i].name);
 
@@ -159,7 +195,7 @@ var NEWS = {
                 star[i].shape.x = pos_x;
                 star[i].shape.y = pos_y;
                 star[i].shape.onClick = function(evt) {
-                    dialog.open(this.data.id, this.data.name, this.data.vmag, 100);
+                    dialog.open(this.data.id, this.data.name, this.data.vmag, this.data.count);
                 }
 
                 stage.addChild(star[i].shape);
@@ -172,10 +208,18 @@ var NEWS = {
             //console.log(star);
 
             //display azimuth and elevation
+            var hours = date.getHours();
+            if(hours.length < 10){
+            	hours = '0' + hours;
+            }
+            var minutes = date.getMinutes();
+            if(minutes.length < 10){
+            	minutes = '0' + minutes;
+            }
             display = {
                 "azimuth" : new Text("azimuth", "12px Arial", "#AAA"),
                 "elevation" : new Text("elevation", "12px Arial", "#AAA"),
-                "time" : new Text("time = " + date.getHours() + " : " + date.getMinutes(), "12px Arial", "#AAA"),
+                "time" : new Text("time = " + hours + " : " + minutes, "12px Arial", "#AAA"),
                 "north" : new Text("N", "20px Arial", "#F00"),
                 "south" : new Text("S", "20px Arial", "#00F"),
                 "east" : new Text("E", "20px Arial", "#FFF"),
@@ -273,14 +317,25 @@ var NEWS = {
             display.elevation.text = "elevation = " + Math.round(screen_elevation);
             display.azimuth.y = canvas.height - 20;
             display.elevation.y = canvas.height - 20;
-            display.time.text = "time = " + date.getHours() + " : " + date.getMinutes();
+            var date = new Date();
+            var hours = date.getHours();
+            if(hours.length < 10){
+            	hours = '0' + hours;
+            }
+            var minutes = date.getMinutes();
+            if(minutes.length < 10){
+            	minutes = '0' + minutes;
+            }
+            display.time.text = "time = " + hours + " : " + minutes;
             display.time.y = canvas.height - 20;
 
             //display_azimuth.x = pos_x;
             //display_elevation.x = pos_x + 200;
 
             // draw the updates to stage:
-            stage.update();
+            if (!dialog_open_flag) { 
+                stage.update();
+            }
         }
         return that;
     }
@@ -374,6 +429,7 @@ Dialog = (function() {
       this.open = __bind(this.open, this);
       this.open_ci = __bind(this.open_ci, this);
       this.close_ci = __bind(this.close_ci, this);
+      this.formatLocalTime = __bind(this.formatLocalTime, this);
 
       this.name = $('#star-name', this.dialog);
       this.vmag = $('#star-vmag', this.dialog);
@@ -384,7 +440,7 @@ Dialog = (function() {
       this.longitude = $('input[name="longitude"]', this.form);
       this.submit = $('#checkin-btn', this.form);
       this.vmag_suffix = ' magnitude star';
-      this.cicnt_suffix = ' people checked in.';
+      this.cicnt_suffix = ' check-ins';
       this.close_btn = $('#close-btn', this.dialog);
       this.close_btn.on('click', function() {
         _this.close();
@@ -393,7 +449,9 @@ Dialog = (function() {
     }
     
     Dialog.prototype.open_ci = function(id){
+	console.log("open_ci dialog");
     	this.close();
+	dialog_open_flag = 1;
     	var _this = this;
     	$.ajax({
     		type: 'get',
@@ -405,22 +463,72 @@ Dialog = (function() {
     	});
     }
     
+    Dialog.prototype.formatLocalTime = function(time){
+    	var checklen = function(num){
+    		if(num < 10){
+    			num = '0' + num;
+    		}
+    		return num;
+    	}
+    	var timeString = '';
+    	timeString += time.getFullYear() + '/';
+    	timeString += checklen(time.getMonth() + 1) + '/';
+    	timeString += checklen(time.getDate()) + ' ';
+    	timeString += checklen(time.getHours()) + ':';
+    	timeString += checklen(time.getMinutes()); // + ':';
+    	//timeString += checklen(time.getSeconds());
+    	
+    	return timeString;
+    }
+    
     Dialog.prototype.render_ci = function(data){
+	console.log("render_ci dialog");
     	var _this = this;
     	this.checkedin_list.html('');
-    	$.each(data, function(index, ci){
-			var $li = _this.checkedin_base.clone();
-			$('.checkin-image img', $li).attr('src', ci.icon);
-			$('.checkin-name', $li).text(ci.uname);
-			$('.checkin-message', $li).text(ci.message.replace(/(\r\n|\r|\n)/g, '<br />'));
-			$('.checkin-place', $li).text(ci.location);
-			$('.checkin-date', $li).text(ci.checintime);
-			$li.prependTo(_this.checkedin_list);
-			$li.css({
-				//'background-color': 'rgb(' + Math.floor( Math.random() * 255 ) + ',' + Math.floor( Math.random() * 255 ) + ',' + Math.floor( Math.random() * 255 ) + ')'
-				'background-color': '#f8f8f8'
-			})
-		});
+    	if(data.length === 0){
+    		this.checkedin_list.html('<li><p>No check-in users.</p></li>');
+    	}else{
+    		var currentDate = new Date();
+    		currentDate = new Date(currentDate.toGMTString());
+	    	$.each(data, function(index, ci){
+				var $li = _this.checkedin_base.clone();
+				$('.checkin-image img', $li).attr('src', ci.icon);
+				$('.checkin-name', $li).text(ci.uname);
+				$('.checkin-message', $li).text(ci.message.replace(/(\r\n|\r|\n)/g, '<br />'));
+				$('.checkin-place', $li).text(ci.location);
+				
+				var $checkindate = $('.checkin-date', $li);
+				var viewTime = ci.checkintime;
+				var matches = ci.checkintime.match(/([0-9]{4})(?:\/|\-)([0-9]{1,2})(?:\/|\-)([0-9]{1,2})\s+([0-9]{1,2})\:([0-9]{1,2})/);
+				if(matches !== null){
+					var listTime = new Date();
+					listTime.setTime(Date.UTC(parseInt(matches[1]), parseInt(matches[2]) - 1, parseInt(matches[3]), parseInt(matches[4]), parseInt(matches[5]), 0));
+					var listTimeString = _this.formatLocalTime(listTime);
+					$checkindate.attr('title', listTimeString);
+					
+					var postedTime = ((currentDate.getTime() - listTime.getTime()) / 1000 / 60);
+					
+					if(postedTime < 60){
+						viewTime = Math.floor(postedTime).toString() + '分前';
+					}else if(postedTime < 60*12){
+						console.log(postedTime % 60)
+						var postedHours = Math.floor(postedTime / 60);
+						var postedMinutes = Math.floor(postedTime % 60);
+						viewTime = postedHours.toString() + '時間' + postedMinutes.toString() + '分前';
+					}else{
+						viewTime = listTimeString;
+					}
+				}
+				
+				
+				$checkindate.text(viewTime);
+				$li.appendTo(_this.checkedin_list);
+				$li.css({
+					//'background-color': 'rgb(' + Math.floor( Math.random() * 255 ) + ',' + Math.floor( Math.random() * 255 ) + ',' + Math.floor( Math.random() * 255 ) + ')'
+					'background-color': '#f8f8f8'	//背景色を指定しないとtouchイベントが拾えない謎仕様。transparentだとダメ。
+				})
+			});
+		}
 		var current_y = 0;
 		var drag_y = 0;
 		var getY = function(event){
@@ -455,11 +563,15 @@ Dialog = (function() {
     }
     
     Dialog.prototype.close_ci = function(){
+	console.log("close_ci dialog");
+	dialog_open_flag = 0;
     	this.checkedin_list.flickable('destroy');
     	this.checkedin.slideUp('slow');
     }
 
     Dialog.prototype.open = function(id, name, vmag, checkin_count) {
+      console.log("open dialog");
+      dialog_open_flag = 1;
       var _this = this;
       if (checkin_count == null) {
         checkin_count = 0;
@@ -474,8 +586,8 @@ Dialog = (function() {
 	    	type: 'post',
 	    	dataType: 'json',
 	    	data: {
-	    		latitude: 35.658,
-	    		longitude: 139.741,
+	    		latitude: place_info.latitude,
+	    		longitude: place_info.longitude,
 	    		message: _this.message.val()
 	    	},
 	    	url: '/index.php/checkin/reg_checkin/' + id,
@@ -495,6 +607,8 @@ Dialog = (function() {
     };
 
     Dialog.prototype.close = function() {
+      console.log("close dialog");
+      dialog_open_flag = 0;
       return this.dialog.slideUp();
     };
 

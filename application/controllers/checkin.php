@@ -59,18 +59,17 @@ class Checkin extends CI_Controller {
     	$in_data = $this->input->post();
 
 		//TODO 不要時には削除 DATA FOR DEBUG
-    	$in_data['latitude'] = "35.664035";
-    	$in_data['longtitude'] = "139.698212";
-
+    	//$in_data['latitude'] = "35.664035";
+    	//$in_data['longitude'] = "139.698212";
 
     	//緯度経度から場所情報の取得（日本語/英語）して登録データ配列に追加
-		$reg_data['location_japanese'] = trim($this->_revgeo($in_data['latitude'], $in_data['longtitude'],'ja'));
-		$reg_data['location_english'] = trim($this->_revgeo($in_data['latitude'], $in_data['longtitude'],'en'));
+		$reg_data['location_japanese'] = trim($this->_revgeo($in_data['latitude'], $in_data['longitude'],'ja'));
+		$reg_data['location_english'] = trim($this->_revgeo($in_data['latitude'], $in_data['longitude'],'en'));
 
 		$reg_data['starid'] = $starid;
 
 		//TODO 不要時には削除 DATA FOR DEBUG
-		$reg_data = array('uid'=>'1','location_japanese'=>$reg_data['location_japanese'],'location_english'=>$reg_data['location_english'],'message'=>'この星にチェックインしてみました。今、空の中で一番きれいですよ。','starid'=>$starid);
+		$reg_data = array('uid'=>'1','location_japanese'=>$reg_data['location_japanese'],'location_english'=>$reg_data['location_english'],'message'=>$in_data['message'],'starid'=>$starid);
     	//DBへの登録
 		$this->Star_checkin->reg_checkin($reg_data);
 
@@ -109,20 +108,25 @@ class Checkin extends CI_Controller {
 
 
 	//緯度経度から場所情報を取得（GoogleMAP APIをたたく）
-    private function _revgeo($latitude, $longtitude, $language = "ja")
+    private function _revgeo($latitude, $longitude, $language = "ja")
     {
-        $url_string = "http://maps.googleapis.com/maps/api/geocode/json?latlng=".$latitude.",".$longtitude."&sensor=true&language=".$language;
+        $url_string = "http://maps.googleapis.com/maps/api/geocode/json?latlng=".$latitude.",".$longitude."&sensor=true&language=".$language;
     	$res = file_get_contents($url_string);
     	$res= json_decode($res);
-		$res_split = explode(',',$res->results[10]->formatted_address);
+    	$addr_array = array();
+    	foreach($res->results[0]->address_components as $component)
+    	{
+    		$addr_array[] = $component->long_name;
+    	}
+    	$addr_array = array_reverse($addr_array);
 
 		if($language == 'ja')
     	{
-		   	return $res_split[1];
+		   	return $addr_array[1].$addr_array[2].'['.$addr_array[0].']';
     	}
     	else
     	{
-    		return $res_split[0].','.$res_split[1].' '.$res_split[2];
+		   	return $addr_array[2].','.$addr_array[1].'['.$addr_array[0].']';
     	}
     }
 

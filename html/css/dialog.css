@@ -169,6 +169,7 @@
 .checkin-date {
 	font-size: 70%;
 	color: #666;
+	text-align: right;
 }
 
 #checkin-close-btn {

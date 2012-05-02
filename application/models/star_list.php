@@ -34,7 +34,7 @@ class Star_list extends CI_Model {
     //星のリストを全部取ってくる
     public function get_all()
     {
-    	$sql = "SELECT starid, hr, bfid, name_".$this->lang." as name, rah, ded, vmag, sp, pmra, pmde FROM starlist WHERE vmag<=3.0";
+    	$sql = "SELECT starid, hr, bfid, name_".$this->lang." AS name, rah, ded, vmag, sp, pmra, pmde, IFNULL(count, 0) AS count FROM starlist LEFT JOIN checkin_count USING (starid) WHERE vmag<=3.0";
     	$var_array = array();
 
     	$query = $this->db->query($sql, $var_array);
